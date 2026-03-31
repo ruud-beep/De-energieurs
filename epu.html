@@ -134,10 +134,26 @@ body {
         });
     }
 
-    function updateValue(id, value) {
+function updateValue(id, value) {
         formData[id] = value;
         const card = document.getElementById(`card_${id}`);
         if(card) card.classList.remove('card-error');
+
+        // --- NIEUWE CODE: Automatisch opmerking invullen ---
+        if (value === "Conform bouwjaar") {
+            // Sla de tekst op in het geheugen voor de Word export
+            formData[id + '_comment'] = "Isolatie dikte niet te meten."; 
+            
+            // Zoek het opmerkingen-vak in beeld en vul de tekst daar ook in
+            if (card) {
+                const textareas = card.getElementsByTagName('textarea');
+                if (textareas.length > 0) {
+                    textareas[0].value = "Isolatie dikte niet te meten.";
+                }
+            }
+        }
+        // --- EINDE NIEUWE CODE ---
+
         checkDependencies();
     }
 
