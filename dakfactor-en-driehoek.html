@@ -25,17 +25,23 @@
             box-shadow: 0 4px 15px rgba(0,0,0,0.1); 
         }
         .btn-back {
-            display: inline-block;
-            margin-bottom: 15px;
-            color: #0056b3;
-            text-decoration: none;
+            position: fixed;
+            top: 16px;
+            left: 16px;
+            background-color: #1f2937;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
             font-weight: bold;
-            font-size: 1em;
-            transition: color 0.3s;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            text-decoration: none;
+            z-index: 100;
+            transition: background-color 0.2s;
+            font-family: 'Segoe UI', Arial, sans-serif;
         }
         .btn-back:hover {
-            color: #004494;
-            text-decoration: underline;
+            background-color: #374151;
+            text-decoration: none;
         }
         h1 { 
             font-size: 1.6em; 
@@ -161,7 +167,7 @@
 <body>
     <div class="container">
         
-        <a href="index.html" class="btn-back">&#8592; Terug naar Home</a>
+        <a href="index.html" class="btn-back">⬅ Terug naar Menu</a>
         <h1>Dak Berekening (ISSO 82.1)</h1>
         <div class="main-content">
             <div class="input-section">
