@@ -81,12 +81,16 @@ body {
         { id: "q17", label: "Beglazing", type: "radio", options: ["EG", "DG", "HR", "HR+", "HR++", "Triple", "Anders"], comment: true, photo: true, hasCheckbox: "Zijn er verschillende beglazing aanwezig? Zo ja, verklaar dit bij opmerkingen" },
         { id: "q18", label: "Zonwering", type: "radio", options: ["Ja", "Nee"], extra: "Type & bediening:", conditionalContent: true },
         { id: "q19", label: "Paneel aanwezig?", type: "radio", options: ["Ja, geïsoleerd", "Ja" , "Nee"], comment: true, conditionalContent: true },
-        { id: "q20", label: "Vloer grenst aan?", type: "radio", options: ["Grond", "Kruipruimte", "AVR", "Kelder", "Buiten", "Anders"], comment: true, hasCheckbox: "Grenst vloer aan meer? Zo ja, verklaar dit bij opmerkingen" },
-        { id: "q21", label: "Wat is de oriëntatie van de voorgevel van de woning?", type: "radio", options: ["Noord", "Noordoost", "Oost", "Zuidoost", "Zuid", "Zuidwest", "West", "Noordwest"], comment: true, photo: true }
+        { id: "q20", label: "Vloer grenst aan?", type: "radio", options: ["Grond", "Kruipruimte", "AVR", "Kelder", "Buiten", "Anders"], comment: true, photo: true, hasCheckbox: "Grenst vloer aan meer? Zo ja, verklaar dit bij opmerkingen" },
+        { id: "q21", label: "bouwwijze muur", type: "radio", options: ["Licht", "Zwaar", "Zeer zwaar"], comment: true, photo: true, conditionalContent: true },
+        { id: "q22", label: "bouwwijze vloer", type: "radio", options: ["Licht", "Zwaar", "Zeer zwaar"], comment: true, photo: true, conditionalContent: true },
+
+        { id: "q23", label: "Wat is de oriëntatie van de voorgevel van de woning?", type: "radio", options: ["Noord", "Noordoost", "Oost", "Zuidoost", "Zuid", "Zuidwest", "West", "Noordwest"], comment: true, photo: true }
     ];
 
     const formData = {}; 
-    const photoData = {}; 
+    const photoData = {};
+let isOpgeslagen = false; // NIEUW: Houdt bij of het werk is geëxporteerd 
 
     function renderApp() {
         const app = document.getElementById('app');
@@ -133,7 +137,9 @@ body {
         });
     }
 
-  function updateValue(id, value) {
+ function updateValue(id, value) {
+        isOpgeslagen = false; // NIEUW: Zodra er iets wijzigt, is het formulier 'onopgeslagen'
+        
         formData[id] = value;
         const card = document.getElementById(`card_${id}`);
         if(card) card.classList.remove('card-error');
@@ -189,6 +195,24 @@ body {
     }
 
 function checkAndGenerate() {
+// --- NIEUWE CODE: Controle kruipruimte & foto ---
+        if (formData['q20'] === "Kruipruimte" && (!photoData['q20'] || photoData['q20'].length === 0)) {
+            // Vul de opmerking in als deze leeg is, of voeg het toe aan bestaande tekst
+            if (!formData['q20_comment']) {
+                formData['q20_comment'] = "Kruipruimte niet toegankelijk";
+            } else if (!formData['q20_comment'].includes("Kruipruimte niet toegankelijk")) {
+                formData['q20_comment'] += " Kruipruimte niet toegankelijk";
+            }
+            
+            // Zorg dat het ook zichtbaar wordt in het tekstvak op het scherm
+            const card20 = document.getElementById('card_q20');
+            if (card20) {
+                const textareas = card20.getElementsByTagName('textarea');
+                if (textareas.length > 0) {
+                    textareas[0].value = formData['q20_comment'];
+                }
+            }
+        }
         let errors = [];
         let missing = [];
         
@@ -321,7 +345,10 @@ async function generateWord() {
                 }
             }
         }
-        Packer.toBlob(new Document({ sections: [{ children }] })).then(b => saveAs(b, `Opname_${formData['adres'] || 'rapport'}.docx`));
+        Packer.toBlob(new Document({ sections: [{ children }] })).then(b => {
+            saveAs(b, `Opname_${formData['adres'] || 'rapport'}.docx`);
+            isOpgeslagen = true; // NIEUW: Markeer het formulier veilig als opgeslagen
+        });
     }// Ondersteuning voor het plakken (paste) van foto's
     window.addEventListener('paste', function(e) {
         // Zoek de kaart waar de gebruiker op dit moment met de muis/cursor is
@@ -344,6 +371,16 @@ async function generateWord() {
             console.log("Klik eerst in een vak om een foto te plakken.");
         }
     });
+
+// --- NIEUWE CODE: Voorkom per ongeluk sluiten ---
+    window.addEventListener('beforeunload', function (e) {
+        // Controleer of er iets in formData staat (gebruiker is begonnen) EN of het onopgeslagen is
+        if (Object.keys(formData).length > 0 && !isOpgeslagen) {
+            e.preventDefault(); 
+            e.returnValue = ''; // Verplicht voor Google Chrome om de melding te tonen
+        }
+    });
+
     renderApp();
 </script>
 </body>
