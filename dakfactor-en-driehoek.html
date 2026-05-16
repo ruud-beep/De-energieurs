@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dak Berekening & Driehoek Rekenmachine</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            background-color: #f4f7f6; 
+            padding: 20px; 
+            color: #333; 
+            line-height: 1.6;
+        }
+        .container { 
+            max-width: 900px; 
+            margin: 0 auto; 
+            background: #fff; 
+            padding: 30px; 
+            border-radius: 8px; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1); 
+        }
+        h1 { 
+            font-size: 1.6em; 
+            color: #0056b3; 
+            border-bottom: 2px solid #e9ecef;
+            padding-bottom: 10px;
+            margin-top: 0;
+        }
+        h2 {
+            font-size: 1.3em;
+            color: #333;
+            margin-top: 0;
+        }
+        .main-content {
+            display: flex;
+            gap: 30px;
+            flex-wrap: wrap;
+            margin-bottom: 30px;
+        }
+        .input-section {
+            flex: 1 1 350px;
+        }
+        .visualization-section {
+            flex: 1 1 400px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 1px dashed #ccc;
+            border-radius: 6px;
+            padding: 10px;
+            background-color: #fafafa;
+            position: relative;
+        }
+        label { 
+            display: block; 
+            margin-top: 12px; 
+            font-weight: bold; 
+            font-size: 0.95em;
+        }
+        input[type="number"] { 
+            width: 100%; 
+            padding: 10px; 
+            margin-top: 4px; 
+            border: 1px solid #ccc; 
+            border-radius: 4px; 
+            box-sizing: border-box; 
+            font-size: 1em;
+        }
+        input:read-only {
+            background-color: #e9ecef;
+            color: #555;
+            cursor: not-allowed;
+        }
+        .results { 
+            margin-top: 20px; 
+            padding: 15px; 
+            background-color: #e9ecef; 
+            border-radius: 6px; 
+            border-left: 5px solid #0056b3;
+        }
+        .result-item { margin-bottom: 8px; font-size: 1.05em; }
+        .result-item:last-child { margin-bottom: 0; }
+        .result-value { font-weight: bold; color: #0056b3; }
+        
+        hr {
+            border: 0;
+            height: 1px;
+            background: #ddd;
+            margin: 40px 0;
+        }
+
+        /* Specifieke stijlen voor de Driehoek Rekenmachine */
+        .flex-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 8px;
+        }
+        .flex-row label {
+            margin-top: 0;
+            width: 40%;
+            font-weight: normal;
+        }
+        .flex-row input {
+            width: 55%;
+            margin-top: 0;
+        }
+        .btn {
+            display: block;
+            width: 100%;
+            background-color: #0056b3;
+            color: white;
+            border: none;
+            padding: 12px;
+            font-size: 1.1em;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: background 0.3s;
+        }
+        .btn:hover { background-color: #004494; }
+        .btn-clear {
+            background-color: #6c757d;
+            margin-top: 10px;
+        }
+        .btn-clear:hover { background-color: #5a6268; }
+
+        canvas {
+            max-width: 100%;
+            height: auto;
+            background: #fff;
+            border: 1px solid #eee;
+            border-radius: 4px;
+        }
+        .canvas-title {
+            position: absolute;
+            top: 15px;
+            font-weight: bold;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        
+        <h1>Dak Berekening (ISSO 82.1)</h1>
+        <div class="main-content">
+            <div class="input-section">
+                <p style="font-size: 0.9em; color: #666; margin-top: 0;">Bepaal de dakfactor en maatvoering op basis van vloerlengte en hellingshoek.</p>
+                
+                <label for="dak-hoek">Hellingshoek dakvlak (&deg;):</label>
+                <input type="number" id="dak-hoek" placeholder="Bijv. 45" min="0" max="89" step="0.1">
+
+                <label for="dak-afstand">Horizontale afstand / Vloerlengte (m):</label>
+                <input type="number" id="dak-afstand" placeholder="Bijv. 5.5" min="0" step="0.01">
+
+                <div class="results">
+                    <div class="result-item">Factor (f<sub>dak</sub>): <span id="out-factor" class="result-value">-</span></div>
+                    <div class="result-item">Lengte van het dak: <span id="out-daklengte" class="result-value">-</span> m</div>
+                    <div class="result-item">Hoogte vanaf de vloer: <span id="out-hoogte" class="result-value">-</span> m</div>
+                </div>
+            </div>
+
+            <div class="visualization-section">
+                <div class="canvas-title">Doorsnede Dak</div>
+                <canvas id="dak-canvas" width="400" height="300"></canvas>
+            </div>
+        </div>
+
+
+        <hr>
+
+
+        <h1>Driehoek Rekenmachine</h1>
+        <p style="font-size: 0.9em; color: #666; margin-top: 0;">Vul 3 waarden in, waarvan minimaal één zijde. De overige waarden en de grafische weergave worden automatisch berekend.</p>
+        
+        <div class="main-content">
+            <div class="input-section">
+                
+                <div class="flex-row">
+                    <label for="t_a">Zijde a:</label>
+                    <input type="number" id="t_a" step="any">
+                </div>
+                <div class="flex-row">
+                    <label for="t_b">Zijde b:</label>
+                    <input type="number" id="t_b" step="any">
+                </div>
+                <div class="flex-row">
+                    <label for="t_c">Zijde c (basis):</label>
+                    <input type="number" id="t_c" step="any">
+                </div>
+
+                <div style="margin: 15px 0; border-top: 1px dashed #ccc;"></div>
+
+                <div class="flex-row">
+                    <label for="t_A">Hoek A (&alpha; in &deg;):</label>
+                    <input type="number" id="t_A" step="any" min="0" max="180">
+                </div>
+                <div class="flex-row">
+                    <label for="t_B">Hoek B (&beta; in &deg;):</label>
+                    <input type="number" id="t_B" step="any" min="0" max="180">
+                </div>
+                <div class="flex-row">
+                    <label for="t_C">Hoek C (&gamma; in &deg;):</label>
+                    <input type="number" id="t_C" step="any" min="0" max="180">
+                </div>
+
+                <div style="margin: 15px 0; border-top: 1px dashed #ccc;"></div>
+
+                <div class="flex-row">
+                    <label for="t_hc">Hoogte (h<sub>c</sub>):</label>
+                    <input type="number" id="t_hc" readonly>
+                </div>
+                <div class="flex-row">
+                    <label for="t_opp">Oppervlakte:</label>
+                    <input type="number" id="t_opp" readonly>
+                </div>
+                <div class="flex-row">
+                    <label for="t_omtrek">Omtrek:</label>
+                    <input type="number" id="t_omtrek" readonly>
+                </div>
+
+                <button class="btn" onclick="berekenDriehoek()">Bereken driehoek</button>
+                <button class="btn btn-clear" onclick="wisDriehoek()">Velden wissen</button>
+            </div>
+
+            <div class="visualization-section">
+                <div class="canvas-title">Voorbeeld driehoek ABC</div>
+                <canvas id="tri-canvas" width="400" height="350"></canvas>
+            </div>
+        </div>
+
+    </div>
+
+   <script>
+        /* =========================================
+           DEEL 1: DAK BEREKENING LOGICA
+           ========================================= */
+        const inputDakHoek = document.getElementById('dak-hoek');
+        const inputDakAfstand = document.getElementById('dak-afstand');
+        const outFactor = document.getElementById('out-factor');
+        const outDaklengte = document.getElementById('out-daklengte');
+        const outHoogte = document.getElementById('out-hoogte');
+        const dakCanvas = document.getElementById('dak-canvas');
+        const dakCtx = dakCanvas.getContext('2d');
+
+        // Aangepast naar 4 decimalen:
+        function formatNL(num) { return num.toFixed(4).replace('.', ','); }
+
+        function tekenDakVisualisatie(hoekDeg, afstandM, daklengteM, hoogteM) {
+            dakCtx.clearRect(0, 0, dakCanvas.width, dakCanvas.height);
+            const marge = 50;
+            const beschikbareBreedte = dakCanvas.width - 2 * marge;
+            const beschikbareHoogte = dakCanvas.height - 2 * marge;
+            const boogStraal = 30;
+
+            const maxAfmetingM = Math.max(afstandM, hoogteM);
+            const schaal = Math.min(beschikbareBreedte / afstandM, beschikbareHoogte / hoogteM);
+
+            const x1 = marge;
+            const y1 = dakCanvas.height - marge + 10;
+            const x2 = marge + afstandM * schaal;
+            const y2 = y1;
+            const x3 = x2;
+            const y3 = y1 - hoogteM * schaal;
+
+            dakCtx.beginPath();
+            dakCtx.moveTo(x1, y1);
+            dakCtx.lineTo(x2, y2);
+            dakCtx.lineTo(x3, y3);
+            dakCtx.closePath();
+            dakCtx.strokeStyle = '#333';
+            dakCtx.lineWidth = 2;
+            dakCtx.stroke();
+
+            const radialen = hoekDeg * (Math.PI / 180);
+            dakCtx.beginPath();
+            dakCtx.arc(x1, y1, boogStraal, 0, -radialen, true);
+            dakCtx.strokeStyle = '#0056b3';
+            dakCtx.stroke();
+
+            dakCtx.fillStyle = '#333';
+            dakCtx.font = '13px Arial';
+            dakCtx.textBaseline = 'middle';
+            dakCtx.textAlign = 'center';
+            dakCtx.fillText(formatNL(afstandM) + ' m', (x1 + x2) / 2, y1 + 20);
+
+            dakCtx.textAlign = 'left';
+            dakCtx.fillText(' ' + formatNL(hoogteM) + ' m', x2 + 5, (y1 + y3) / 2);
+
+            dakCtx.save();
+            dakCtx.translate((x1 + x3) / 2, (y1 + y3) / 2);
+            dakCtx.rotate(-radialen);
+            dakCtx.textAlign = 'center';
+            dakCtx.textBaseline = 'bottom';
+            dakCtx.fillStyle = '#0056b3';
+            dakCtx.font = 'bold 14px Arial';
+            dakCtx.fillText(formatNL(daklengteM) + ' m', 0, -5);
+            dakCtx.restore();
+
+            dakCtx.fillStyle = '#0056b3';
+            dakCtx.font = '12px Arial';
+            dakCtx.textAlign = 'left';
+            dakCtx.textBaseline = 'bottom';
+            // Hoek mag wat korter blijven in de tekening, of ook 4 decimalen:
+            dakCtx.fillText(hoekDeg.toFixed(4) + '°', x1 + boogStraal + 5, y1 - 5); 
+        }
+
+        function berekenDak() {
+            const hoek = parseFloat(inputDakHoek.value);
+            const afstand = parseFloat(inputDakAfstand.value);
+
+            if (isNaN(hoek) || hoek < 0 || hoek >= 90) {
+                outFactor.textContent = '-'; outDaklengte.textContent = '-'; outHoogte.textContent = '-';
+                dakCtx.clearRect(0, 0, dakCanvas.width, dakCanvas.height);
+                return;
+            }
+
+            const radialen = hoek * (Math.PI / 180);
+            const factor = 1 / Math.cos(radialen);
+            outFactor.textContent = formatNL(factor);
+
+            if (!isNaN(afstand) && afstand > 0) {
+                const daklengte = afstand * factor;
+                const hoogte = afstand * Math.tan(radialen);
+                outDaklengte.textContent = formatNL(daklengte);
+                outHoogte.textContent = formatNL(hoogte);
+                tekenDakVisualisatie(hoek, afstand, daklengte, hoogte);
+            } else {
+                outDaklengte.textContent = '-'; outHoogte.textContent = '-';
+                dakCtx.clearRect(0, 0, dakCanvas.width, dakCanvas.height);
+            }
+        }
+
+        inputDakHoek.addEventListener('input', berekenDak);
+        inputDakAfstand.addEventListener('input', berekenDak);
+
+
+        /* =========================================
+           DEEL 2: DRIEHOEK BEREKENING LOGICA
+           ========================================= */
+        function deg2rad(d) { return d * Math.PI / 180; }
+        function rad2deg(r) { return r * 180 / Math.PI; }
+
+        function wisDriehoek() {
+            const ids = ['t_a', 't_b', 't_c', 't_A', 't_B', 't_C', 't_hc', 't_opp', 't_omtrek'];
+            ids.forEach(id => document.getElementById(id).value = '');
+            const canvas = document.getElementById('tri-canvas');
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+
+        function berekenDriehoek() {
+            let a = parseFloat(document.getElementById('t_a').value);
+            let b = parseFloat(document.getElementById('t_b').value);
+            let c = parseFloat(document.getElementById('t_c').value);
+            let A = parseFloat(document.getElementById('t_A').value);
+            let B = parseFloat(document.getElementById('t_B').value);
+            let C = parseFloat(document.getElementById('t_C').value);
+
+            a = isNaN(a) ? null : a;
+            b = isNaN(b) ? null : b;
+            c = isNaN(c) ? null : c;
+            A = isNaN(A) ? null : deg2rad(A);
+            B = isNaN(B) ? null : deg2rad(B);
+            C = isNaN(C) ? null : deg2rad(C);
+
+            if (a === null && b === null && c === null) {
+                alert("Vul minimaal één zijde in.");
+                return;
+            }
+
+            let iter = 0;
+            let changed = true;
+            while (changed && iter < 10) {
+                changed = false;
+
+                if (A !== null && B !== null && C === null) { C = Math.PI - A - B; changed = true; }
+                if (A !== null && C !== null && B === null) { B = Math.PI - A - C; changed = true; }
+                if (B !== null && C !== null && A === null) { A = Math.PI - B - C; changed = true; }
+
+                if (A !== null && B !== null && a !== null && b === null) { b = a * Math.sin(B) / Math.sin(A); changed = true; }
+                if (A !== null && B !== null && b !== null && a === null) { a = b * Math.sin(A) / Math.sin(B); changed = true; }
+                if (A !== null && C !== null && a !== null && c === null) { c = a * Math.sin(C) / Math.sin(A); changed = true; }
+                if (A !== null && C !== null && c !== null && a === null) { a = c * Math.sin(A) / Math.sin(C); changed = true; }
+                if (B !== null && C !== null && b !== null && c === null) { c = b * Math.sin(C) / Math.sin(B); changed = true; }
+                if (B !== null && C !== null && c !== null && b === null) { b = c * Math.sin(B) / Math.sin(C); changed = true; }
+
+                if (a !== null && b !== null && C !== null && c === null) { c = Math.sqrt(a*a + b*b - 2*a*b*Math.cos(C)); changed = true; }
+                if (a !== null && c !== null && B !== null && b === null) { b = Math.sqrt(a*a + c*c - 2*a*c*Math.cos(B)); changed = true; }
+                if (b !== null && c !== null && A !== null && a === null) { a = Math.sqrt(b*b + c*c - 2*b*c*Math.cos(A)); changed = true; }
+
+                if (a !== null && b !== null && c !== null) {
+                    if (A === null) { A = Math.acos((b*b + c*c - a*a) / (2*b*c)); changed = true; }
+                    if (B === null) { B = Math.acos((a*a + c*c - b*b) / (2*a*c)); changed = true; }
+                    if (C === null) { C = Math.acos((a*a + b*b - c*c) / (2*a*b)); changed = true; }
+                }
+
+                if (a !== null && b !== null && A !== null && B === null) { let s = b * Math.sin(A) / a; if (s <= 1) { B = Math.asin(s); changed = true; } }
+                if (a !== null && b !== null && B !== null && A === null) { let s = a * Math.sin(B) / b; if (s <= 1) { A = Math.asin(s); changed = true; } }
+                if (a !== null && c !== null && A !== null && C === null) { let s = c * Math.sin(A) / a; if (s <= 1) { C = Math.asin(s); changed = true; } }
+                if (a !== null && c !== null && C !== null && A === null) { let s = a * Math.sin(C) / c; if (s <= 1) { A = Math.asin(s); changed = true; } }
+                if (b !== null && c !== null && B !== null && C === null) { let s = c * Math.sin(B) / b; if (s <= 1) { C = Math.asin(s); changed = true; } }
+                if (b !== null && c !== null && C !== null && B === null) { let s = b * Math.sin(C) / c; if (s <= 1) { B = Math.asin(s); changed = true; } }
+
+                iter++;
+            }
+
+            if (a && b && c && A && B && C && !isNaN(a) && a>0 && b>0 && c>0) {
+                let s_val = (a + b + c) / 2;
+                let area = Math.sqrt(s_val * (s_val - a) * (s_val - b) * (s_val - c));
+                let hc = (2 * area) / c;
+                let perimeter = a + b + c;
+
+                // Aangepast naar 4 decimalen:
+                document.getElementById('t_a').value = a.toFixed(4);
+                document.getElementById('t_b').value = b.toFixed(4);
+                document.getElementById('t_c').value = c.toFixed(4);
+                document.getElementById('t_A').value = rad2deg(A).toFixed(4);
+                document.getElementById('t_B').value = rad2deg(B).toFixed(4);
+                document.getElementById('t_C').value = rad2deg(C).toFixed(4);
+                
+                document.getElementById('t_hc').value = hc.toFixed(4);
+                document.getElementById('t_opp').value = area.toFixed(4);
+                document.getElementById('t_omtrek').value = perimeter.toFixed(4);
+
+                tekenAlgemeneDriehoek(a, b, c, A, B, C, hc);
+            } else {
+                alert("Kan geen geldige driehoek berekenen met deze waarden. Controleer de invoer.");
+            }
+        }
+
+        function tekenAlgemeneDriehoek(a, b, c, A, B, C, hc) {
+            const canvas = document.getElementById('tri-canvas');
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            let xA = 0, yA = 0;
+            let xB = c, yB = 0;
+            let xC = b * Math.cos(A);
+            let yC = b * Math.sin(A);
+
+            let minX = Math.min(xA, xB, xC);
+            let maxX = Math.max(xA, xB, xC);
+            let minY = Math.min(yA, yB, yC);
+            let maxY = Math.max(yA, yB, yC);
+
+            let width = maxX - minX;
+            let height = maxY - minY;
+            let margin = 50;
+            
+            let scale = Math.min((canvas.width - 2 * margin) / width, (canvas.height - 2 * margin - 30) / height);
+
+            let offsetX = (canvas.width - width * scale) / 2 - minX * scale;
+            let offsetY = (canvas.height + height * scale) / 2 + minY * scale + 10; 
+
+            function tx(x) { return x * scale + offsetX; }
+            function ty(y) { return offsetY - y * scale; }
+
+            ctx.beginPath();
+            ctx.moveTo(tx(xA), ty(yA));
+            ctx.lineTo(tx(xB), ty(yB));
+            ctx.lineTo(tx(xC), ty(yC));
+            ctx.closePath();
+            ctx.strokeStyle = '#2c3e50';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.setLineDash([5, 5]);
+            ctx.moveTo(tx(xC), ty(yC));
+            ctx.lineTo(tx(xC), ty(yA));
+            ctx.strokeStyle = '#7f8c8d';
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            ctx.fillStyle = '#333';
+            ctx.font = '16px Arial';
+            ctx.textAlign = 'right'; ctx.fillText('A', tx(xA) - 10, ty(yA) + 15);
+            ctx.textAlign = 'left';  ctx.fillText('B', tx(xB) + 10, ty(yB) + 15);
+            ctx.textAlign = 'center'; ctx.fillText('C', tx(xC), ty(yC) - 15);
+
+            ctx.font = 'bold 14px Arial';
+            ctx.fillStyle = '#2980b9';
+            ctx.fillText('c', tx(c / 2), ty(0) + 20);
+            ctx.textAlign = 'right'; ctx.fillText('b', tx(xC / 2) - 10, ty(yC / 2));
+            ctx.textAlign = 'left'; ctx.fillText('a', tx((xB + xC) / 2) + 10, ty(yC / 2));
+
+            ctx.font = 'italic 13px Arial';
+            ctx.fillStyle = '#7f8c8d';
+            ctx.textAlign = 'left';
+            ctx.fillText('hc', tx(xC) + 5, ty(yC / 2));
+            
+            ctx.font = '12px Arial';
+            ctx.fillStyle = '#333';
+            ctx.textAlign = 'left'; ctx.fillText('α', tx(xA) + 15, ty(yA) - 5);
+            ctx.textAlign = 'right'; ctx.fillText('β', tx(xB) - 15, ty(yB) - 5);
+            ctx.textAlign = 'center'; ctx.fillText('γ', tx(xC), ty(yC) + 20);
+        }
+
+        // --- VOORBEELD TEKENINGEN BIJ OPSTARTEN ---
+        window.onload = function() {
+            tekenDakVisualisatie(45, 5.5, 7.7782, 5.5);
+            tekenAlgemeneDriehoek(3, 4, 5, 0.6435, 0.9273, 1.5708, 2.4);
+        };
+    </script>
+</body>
+</html>
