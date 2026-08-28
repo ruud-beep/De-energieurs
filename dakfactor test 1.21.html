@@ -16,51 +16,48 @@
             padding: 20px;
             display: flex;
             justify-content: center;
+            color: #333;
+            line-height: 1.6;
         }
 
         .container {
-            background-color: #ffffff;
             background-color: rgba(255, 255, 255, 0.96); 
-            padding: 25px;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            max-width: 950px;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            max-width: 900px;
             width: 100%;
+            margin-top: 20px;
         }
 
-        .header-bar {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 20px;
-            border-bottom: 2px solid #ecf0f1;
-            padding-bottom: 10px;
+        /* Vaste Terug-knop (Overgenomen van PV Verdeling) */
+        .btn-back {
+            position: fixed;
+            top: 16px;
+            left: 16px;
+            background-color: #1f2937;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: bold;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            text-decoration: none;
+            z-index: 100;
+            transition: background-color 0.2s;
+            font-family: 'Segoe UI', Arial, sans-serif;
+        }
+        .btn-back:hover {
+            background-color: #374151;
+            text-decoration: none;
         }
 
         h1 {
-            font-size: 22px;
-            color: #2c3e50;
-            margin: 0;
-        }
-
-        .back-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 8px 14px;
-            background-color: #f1f5f9;
-            color: #334155;
-            text-decoration: none;
-            font-size: 14px;
-            font-weight: bold;
-            border-radius: 6px;
-            border: 1px solid #cbd5e0;
-            transition: all 0.2s;
-        }
-
-        .back-btn:hover {
-            background-color: #e2e8f0;
-            color: #1e293b;
+            font-size: 1.6em;
+            color: #0056b3;
+            border-bottom: 2px solid #e9ecef;
+            padding-bottom: 10px;
+            margin-top: 0;
+            margin-bottom: 20px;
         }
 
         .roof-selector {
@@ -83,9 +80,9 @@
         }
 
         .type-btn.active {
-            border-color: #2563eb;
+            border-color: #0056b3;
             background-color: #eff6ff;
-            color: #2563eb;
+            color: #0056b3;
         }
 
         .grid-inputs {
@@ -104,7 +101,7 @@
 
         .card-title {
             font-weight: bold;
-            color: #4a5568;
+            color: #0056b3;
             margin-bottom: 12px;
         }
 
@@ -136,7 +133,7 @@
             font-weight: bold;
         }
 
-        /* Unieke Kleurcoderingen voor de Invoervelden */
+        /* Kleurcoderingen voor de Invoervelden */
         .blue-top-input {
             border: 2px solid #0284c7 !important;
             background-color: #e0f2fe !important;
@@ -183,17 +180,18 @@
         button.calc-btn {
             width: 100%;
             padding: 12px;
-            background-color: #2563eb;
+            background-color: #10b981;
             color: white;
             border: none;
             border-radius: 6px;
             font-size: 16px;
             font-weight: bold;
             cursor: pointer;
+            transition: background 0.2s;
         }
 
         button.calc-btn:hover {
-            background-color: #1d4ed8;
+            background-color: #059669;
         }
 
         .results-table {
@@ -216,7 +214,7 @@
 
         .results-table tr.total-row {
             font-weight: bold;
-            background-color: #f0fdf4;
+            background-color: #ecfdf5;
         }
 
         canvas {
@@ -231,11 +229,11 @@
 </head>
 <body>
 
+<!-- Terug knop in dezelfde stijl als PV Verdeling 2.0 en Verspringende Woning -->
+<a href="index.html" class="btn-back">⬅ Terug naar Menu</a>
+
 <div class="container">
-    <div class="header-bar">
-        <h1>Dakfactor Oppervlakte Calculator </h1>
-        <a href="index.html" class="back-btn">&#8592; Terug</a>
-    </div>
+    <h1>Dakfactor Oppervlakte Calculator</h1>
 
     <div class="roof-selector">
         <button class="type-btn active" id="btnSchild" onclick="setRoofType('schild')">Schilddak / Asymmetrisch (4 Zijden)</button>
