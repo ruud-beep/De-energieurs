@@ -455,74 +455,94 @@
             }
         }
 
-        function tekenAlgemeneDriehoek(a, b, c, A, B, C, hc) {
-            const canvas = document.getElementById('tri-canvas');
-            const ctx = canvas.getContext('2d');
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+function tekenAlgemeneDriehoek(a, b, c, A, B, C, hc) {
+    const canvas = document.getElementById('tri-canvas');
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            let xA = 0, yA = 0;
-            let xB = c, yB = 0;
-            let xC = b * Math.cos(A);
-            let yC = b * Math.sin(A);
+    let xA = 0, yA = 0;
+    let xB = c, yB = 0;
+    let xC = b * Math.cos(A);
+    let yC = b * Math.sin(A);
 
-            let minX = Math.min(xA, xB, xC);
-            let maxX = Math.max(xA, xB, xC);
-            let minY = Math.min(yA, yB, yC);
-            let maxY = Math.max(yA, yB, yC);
+    let minX = Math.min(xA, xB, xC);
+    let maxX = Math.max(xA, xB, xC);
+    let minY = Math.min(yA, yB, yC);
+    let maxY = Math.max(yA, yB, yC);
 
-            let width = maxX - minX;
-            let height = maxY - minY;
-            let margin = 50;
-            
-            let scale = Math.min((canvas.width - 2 * margin) / width, (canvas.height - 2 * margin - 30) / height);
+    let width = maxX - minX;
+    let height = maxY - minY;
+    let margin = 60;
+    
+    let scale = Math.min((canvas.width - 2 * margin) / width, (canvas.height - 2 * margin - 30) / height);
 
-            let offsetX = (canvas.width - width * scale) / 2 - minX * scale;
-            let offsetY = (canvas.height + height * scale) / 2 + minY * scale + 10; 
+    let offsetX = (canvas.width - width * scale) / 2 - minX * scale;
+    let offsetY = (canvas.height + height * scale) / 2 + minY * scale + 10; 
 
-            function tx(x) { return x * scale + offsetX; }
-            function ty(y) { return offsetY - y * scale; }
+    function tx(x) { return x * scale + offsetX; }
+    function ty(y) { return offsetY - y * scale; }
 
-            ctx.beginPath();
-            ctx.moveTo(tx(xA), ty(yA));
-            ctx.lineTo(tx(xB), ty(yB));
-            ctx.lineTo(tx(xC), ty(yC));
-            ctx.closePath();
-            ctx.strokeStyle = '#2c3e50';
-            ctx.lineWidth = 2;
-            ctx.stroke();
+    // Helper voor formatteren op 2 decimalen met komma
+    function format2NL(num) { 
+        return num.toFixed(2).replace('.', ','); 
+    }
 
-            ctx.beginPath();
-            ctx.setLineDash([5, 5]);
-            ctx.moveTo(tx(xC), ty(yC));
-            ctx.lineTo(tx(xC), ty(yA));
-            ctx.strokeStyle = '#7f8c8d';
-            ctx.stroke();
-            ctx.setLineDash([]);
+    // Driehoek tekenen
+    ctx.beginPath();
+    ctx.moveTo(tx(xA), ty(yA));
+    ctx.lineTo(tx(xB), ty(yB));
+    ctx.lineTo(tx(xC), ty(yC));
+    ctx.closePath();
+    ctx.strokeStyle = '#2c3e50';
+    ctx.lineWidth = 2;
+    ctx.stroke();
 
-            ctx.fillStyle = '#333';
-            ctx.font = '16px Arial';
-            ctx.textAlign = 'right'; ctx.fillText('A', tx(xA) - 10, ty(yA) + 15);
-            ctx.textAlign = 'left';  ctx.fillText('B', tx(xB) + 10, ty(yB) + 15);
-            ctx.textAlign = 'center'; ctx.fillText('C', tx(xC), ty(yC) - 15);
+    // Hoogtelijn hc tekenen
+    ctx.beginPath();
+    ctx.setLineDash([5, 5]);
+    ctx.moveTo(tx(xC), ty(yC));
+    ctx.lineTo(tx(xC), ty(yA));
+    ctx.strokeStyle = '#7f8c8d';
+    ctx.stroke();
+    ctx.setLineDash([]);
 
-            ctx.font = 'bold 14px Arial';
-            ctx.fillStyle = '#2980b9';
-            ctx.fillText('c', tx(c / 2), ty(0) + 20);
-            ctx.textAlign = 'right'; ctx.fillText('b', tx(xC / 2) - 10, ty(yC / 2));
-            ctx.textAlign = 'left'; ctx.fillText('a', tx((xB + xC) / 2) + 10, ty(yC / 2));
+    // Hoekpunten A, B, C
+    ctx.fillStyle = '#333';
+    ctx.font = 'bold 14px Arial';
+    ctx.textAlign = 'right'; ctx.fillText('A', tx(xA) - 10, ty(yA) + 15);
+    ctx.textAlign = 'left';  ctx.fillText('B', tx(xB) + 10, ty(yB) + 15);
+    ctx.textAlign = 'center'; ctx.fillText('C', tx(xC), ty(yC) - 15);
 
-            ctx.font = 'italic 13px Arial';
-            ctx.fillStyle = '#7f8c8d';
-            ctx.textAlign = 'left';
-            ctx.fillText('hc', tx(xC) + 5, ty(yC / 2));
-            
-            ctx.font = '12px Arial';
-            ctx.fillStyle = '#333';
-            ctx.textAlign = 'left'; ctx.fillText('α', tx(xA) + 15, ty(yA) - 5);
-            ctx.textAlign = 'right'; ctx.fillText('β', tx(xB) - 15, ty(yB) - 5);
-            ctx.textAlign = 'center'; ctx.fillText('γ', tx(xC), ty(yC) + 20);
-        }
+    // Zijden met berekende maten (2 decimalen)
+    ctx.font = 'bold 12px Arial';
+    ctx.fillStyle = '#2980b9';
+    ctx.textAlign = 'center';
+    ctx.fillText(`c: ${format2NL(c)}`, tx(c / 2), ty(0) + 20);
+    
+    ctx.textAlign = 'right'; 
+    ctx.fillText(`b: ${format2NL(b)}`, tx(xC / 2) - 10, ty(yC / 2));
+    
+    ctx.textAlign = 'left'; 
+    ctx.fillText(`a: ${format2NL(a)}`, tx((xB + xC) / 2) + 10, ty(yC / 2));
 
+    // Hoogtelijn waarde (2 decimalen)
+    ctx.font = 'italic 11px Arial';
+    ctx.fillStyle = '#7f8c8d';
+    ctx.textAlign = 'left';
+    ctx.fillText(`hc: ${format2NL(hc)}`, tx(xC) + 5, ty(yC / 2));
+    
+    // Hoeken met berekende waarden (2 decimalen met gradenteken)
+    ctx.font = '11px Arial';
+    ctx.fillStyle = '#d35400';
+    ctx.textAlign = 'left'; 
+    ctx.fillText(`${format2NL(rad2deg(A))}°`, tx(xA) + 15, ty(yA) - 5);
+    
+    ctx.textAlign = 'right'; 
+    ctx.fillText(`${format2NL(rad2deg(B))}°`, tx(xB) - 15, ty(yB) - 5);
+    
+    ctx.textAlign = 'center'; 
+    ctx.fillText(`${format2NL(rad2deg(C))}°`, tx(xC), ty(yC) + 20);
+}
         // --- VOORBEELD TEKENINGEN BIJ OPSTARTEN ---
         window.onload = function() {
             tekenDakVisualisatie(45, 5.5, 7.7782, 5.5);
