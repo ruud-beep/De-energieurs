@@ -6,8 +6,12 @@
     <title>Dakfactor Calculator BRL 9500 / ISSO 82.1</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f6f8;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background-color: #f0f2f5;
+            background-image: url('achtergrond1.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
             margin: 0;
             padding: 20px;
             display: flex;
@@ -15,10 +19,11 @@
         }
 
         .container {
-            background-color: #fff;
+            background-color: #ffffff; /* fallback voor offline */
+            background-color: rgba(255, 255, 255, 0.96); 
             padding: 25px;
-            border-radius: 10px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
             max-width: 950px;
             width: 100%;
         }
@@ -94,7 +99,7 @@
             margin-bottom: 4px;
         }
 
-        input[type="number"] {
+        input[type="text"] {
             width: 100%;
             padding: 8px;
             border: 1px solid #cbd5e0;
@@ -179,16 +184,16 @@
             <div class="field-row">
                 <div class="field">
                     <label for="length">Totale Lengte (L)</label>
-                    <input type="number" id="length" value="10.0" step="0.1" oninput="calculate()">
+                    <input type="text" id="length" value="10,0" inputmode="decimal" oninput="calculate()">
                 </div>
                 <div class="field">
                     <label for="width">Totale Breedte (B)</label>
-                    <input type="number" id="width" value="6.0" step="0.1" oninput="calculate()">
+                    <input type="text" id="width" value="6,0" inputmode="decimal" oninput="calculate()">
                 </div>
             </div>
             <div class="field">
                 <label for="ridge">Noklengte (N)</label>
-                <input type="number" id="ridge" value="4.0" step="0.1" oninput="calculate()">
+                <input type="text" id="ridge" value="4,0" inputmode="decimal" oninput="calculate()">
             </div>
         </div>
 
@@ -197,21 +202,21 @@
             <div class="field-row">
                 <div class="field">
                     <label for="degTop">Helling Boven / Noord (°)</label>
-                    <input type="number" class="green-input" id="degTop" value="45" step="1" oninput="calculate()">
+                    <input type="text" class="green-input" id="degTop" value="45" inputmode="decimal" oninput="calculate()">
                 </div>
                 <div class="field">
                     <label for="degBottom">Helling Onder / Zuid (°)</label>
-                    <input type="number" class="green-input" id="degBottom" value="45" step="1" oninput="calculate()">
+                    <input type="text" class="green-input" id="degBottom" value="45" inputmode="decimal" oninput="calculate()">
                 </div>
             </div>
             <div class="field-row">
                 <div class="field">
                     <label for="degLeft">Helling Links / West (°)</label>
-                    <input type="number" class="green-input" id="degLeft" value="45" step="1" oninput="calculate()">
+                    <input type="text" class="green-input" id="degLeft" value="45" inputmode="decimal" oninput="calculate()">
                 </div>
                 <div class="field">
                     <label for="degRight">Helling Rechts / Oost (°)</label>
-                    <input type="number" class="green-input" id="degRight" value="45" step="1" oninput="calculate()">
+                    <input type="text" class="green-input" id="degRight" value="45" inputmode="decimal" oninput="calculate()">
                 </div>
             </div>
         </div>
@@ -309,15 +314,22 @@ function setRoofType(type) {
     calculate();
 }
 
-function calculate() {
-    const L = parseFloat(document.getElementById('length').value) || 0;
-    const B = parseFloat(document.getElementById('width').value) || 0;
-    let N = parseFloat(document.getElementById('ridge').value) || 0;
+// Functie die zowel '10.5' als '10,5' correct omzet naar een getal voor JavaScript
+function parseNumber(id) {
+    const rawVal = document.getElementById(id).value || "0";
+    const normalizedVal = rawVal.replace(',', '.');
+    return parseFloat(normalizedVal) || 0;
+}
 
-    let degTop = parseFloat(document.getElementById('degTop').value) || 0;
-    let degBottom = parseFloat(document.getElementById('degBottom').value) || 0;
-    let degLeft = parseFloat(document.getElementById('degLeft').value) || 0;
-    let degRight = parseFloat(document.getElementById('degRight').value) || 0;
+function calculate() {
+    const L = parseNumber('length');
+    const B = parseNumber('width');
+    let N = parseNumber('ridge');
+
+    let degTop = parseNumber('degTop');
+    let degBottom = parseNumber('degBottom');
+    let degLeft = parseNumber('degLeft');
+    let degRight = parseNumber('degRight');
 
     if (currentRoofType === 'zadel') {
         N = L;
@@ -326,13 +338,11 @@ function calculate() {
         document.getElementById('ridge').value = L;
     }
 
-    // Dakfactoren (1 / cos(hoek))
     const dfTopVal = degTop > 0 ? (1 / Math.cos(degTop * Math.PI / 180)) : 0;
     const dfBottomVal = degBottom > 0 ? (1 / Math.cos(degBottom * Math.PI / 180)) : 0;
     const dfLeftVal = degLeft > 0 ? (1 / Math.cos(degLeft * Math.PI / 180)) : 0;
     const dfRightVal = degRight > 0 ? (1 / Math.cos(degRight * Math.PI / 180)) : 0;
 
-    // Dynamische positie van de nok op de Y-as
     let depthTop = B / 2;
     let depthBottom = B / 2;
 
@@ -343,7 +353,6 @@ function calculate() {
         depthBottom = B - depthTop;
     }
 
-    // Dieptes van de driehoeken aan de zijkanten
     const isLeftActive = degLeft > 0;
     const isRightActive = degRight > 0;
 
@@ -359,7 +368,6 @@ function calculate() {
         triDepthRight = L - N;
     }
 
-    // Grondoppervlaktes per vlak
     const floorLeft = isLeftActive ? (0.5 * B * triDepthLeft) : 0;
     const floorRight = isRightActive ? (0.5 * B * triDepthRight) : 0;
 
@@ -369,7 +377,6 @@ function calculate() {
     const floorTop = remainingFloor * (depthTop / B);
     const floorBottom = remainingFloor * (depthBottom / B);
 
-    // Dakoppervlaktes berekenen
     const roofTop = floorTop * (degTop > 0 ? dfTopVal : 0);
     const roofBottom = floorBottom * (degBottom > 0 ? dfBottomVal : 0);
     const roofLeft = floorLeft * (degLeft > 0 ? dfLeftVal : 0);
@@ -377,13 +384,11 @@ function calculate() {
 
     const totalRoof = roofTop + roofBottom + roofLeft + roofRight;
 
-    // Vormnamen bepalen voor tabel
     document.getElementById('vTop').textContent = (triDepthLeft === 0 && triDepthRight === 0) ? "Rechthoek" : "Trapeze";
     document.getElementById('vBottom').textContent = (triDepthLeft === 0 && triDepthRight === 0) ? "Rechthoek" : "Trapeze";
     document.getElementById('vLeft').textContent = isLeftActive ? "Driehoek" : "Gevel (0°)";
     document.getElementById('vRight').textContent = isRightActive ? "Driehoek" : "Gevel (0°)";
 
-    // Tabel invullen
     document.getElementById('fTop').textContent = floorTop.toFixed(2) + " m²";
     document.getElementById('aTop').textContent = degTop + "°";
     document.getElementById('dfTop').textContent = degTop > 0 ? dfTopVal.toFixed(3) : "-";
