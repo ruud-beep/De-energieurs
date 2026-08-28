@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Warmtepomp Interpolatie</title>
+    <style>
+        body { 
+            font-family: 'Segoe UI', Arial, sans-serif; 
+            background-color: #f0f2f5; 
+            background-image: url('achtergrond1.jpg'); 
+            background-size: cover; 
+            background-position: center; 
+            background-attachment: fixed; 
+            padding: 20px; 
+            color: #333; 
+            line-height: 1.6;
+        }
+        .container { 
+            max-width: 900px; 
+            margin: 0 auto; 
+            background: rgba(255, 255, 255, 0.96); 
+            padding: 30px; 
+            border-radius: 8px; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1); 
+            margin-top: 20px;
+        }
+        .btn-back {
+            position: fixed;
+            top: 16px;
+            left: 16px;
+            background-color: #1f2937;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: bold;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            text-decoration: none;
+            z-index: 100;
+            transition: background-color 0.2s;
+            font-family: 'Segoe UI', Arial, sans-serif;
+        }
+        .btn-back:hover {
+            background-color: #374151;
+            text-decoration: none;
+        }
+        h1 { 
+            font-size: 1.6em; 
+            color: #0056b3; 
+            border-bottom: 2px solid #e9ecef;
+            padding-bottom: 10px;
+            margin-top: 0;
+        }
+        .subtitle {
+            font-size: 0.9em;
+            color: #666;
+            margin-top: -5px;
+            margin-bottom: 20px;
+        }
+        
+        .card {
+            background-color: #fafafa;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 18px;
+            margin-bottom: 20px;
+        }
+        .card-title {
+            font-size: 1.05em;
+            font-weight: bold;
+            color: #0056b3;
+            margin-bottom: 4px;
+        }
+        .card-desc {
+            font-size: 0.85em;
+            color: #64748b;
+            margin-bottom: 15px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 12px;
+        }
+        label { 
+            font-weight: bold; 
+            font-size: 0.85em;
+            color: #4a5568;
+            margin-bottom: 4px;
+        }
+        input[type="number"], input[type="text"], select { 
+            width: 100%; 
+            padding: 9px 12px; 
+            border: 1px solid #cbd5e0; 
+            border-radius: 6px; 
+            box-sizing: border-box; 
+            font-size: 0.95em;
+            background-color: #fff;
+        }
+        input:focus, select:focus {
+            border-color: #0056b3;
+            outline: none;
+        }
+
+        /* Toggle Buttons voor Eenheid */
+        .unit-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .unit-btn {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #cbd5e0;
+            background-color: #fff;
+            color: #334155;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .unit-btn.active {
+            background-color: #10b981;
+            color: white;
+            border-color: #10b981;
+        }
+
+        /* Quick-select chips */
+        .chips-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 10px;
+        }
+        .chip {
+            background-color: #fff;
+            border: 1px solid #cbd5e0;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.85em;
+            cursor: pointer;
+            color: #4a5568;
+            transition: all 0.15s;
+        }
+        .chip:hover {
+            border-color: #10b981;
+            color: #10b981;
+            background-color: #ecfdf5;
+        }
+        .chip.highlight {
+            background-color: #10b981;
+            color: white;
+            border-color: #10b981;
+            font-weight: bold;
+        }
+
+        .advies-tekst {
+            font-size: 0.88em;
+            color: #059669;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+
+        .btn-link {
+            background: none;
+            border: none;
+            color: #10b981;
+            font-weight: bold;
+            font-size: 0.85em;
+            cursor: pointer;
+            padding: 0;
+            margin-top: 10px;
+            text-decoration: underline;
+            display: block;
+        }
+
+        /* Grid voor Kolommen */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .btn-main {
+            width: 100%;
+            background-color: #10b981;
+            color: white;
+            border: none;
+            padding: 12px;
+            font-size: 1em;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin-top: 10px;
+        }
+        .btn-main:hover { background-color: #059669; }
+
+        /* Resultaten Card */
+        .result-card {
+            background-color: #ecfdf5;
+            border: 1px solid #a7f3d0;
+            border-radius: 8px;
+            padding: 18px;
+            margin-top: 25px;
+        }
+        .result-card h3 {
+            margin: 0 0 12px 0;
+            color: #065f46;
+            font-size: 1.1em;
+        }
+        .result-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 12px;
+            background-color: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            margin-bottom: 6px;
+            font-size: 0.95em;
+        }
+        .result-value {
+            font-weight: bold;
+            color: #047857;
+        }
+    </style>
+</head>
+<body>
+
+    <a href="index.html" class="btn-back">⬅ Terug naar Menu</a>
+
+    <div class="container">
+        <h1>Warmtepomp interpolatie</h1>
+        <p class="subtitle">Bepaal ηH, FH en WH;aux tussen twee kolommen van een kwaliteitsverklaring.</p>
+
+        <!-- Referentie (Optioneel) -->
+        <div class="form-group" style="margin-bottom: 20px;">
+            <label for="referentie">Referentie (optioneel)</label>
+            <input type="text" id="referentie" placeholder="bijv. Hoofdstraat 123, Amsterdam">
+        </div>
+
+        <!-- SECTIE 1: EENHEID -->
+        <div class="card">
+            <div class="card-title">1. Eenheid in de verklaring</div>
+            <div class="card-desc">Kijk boven de tabel: staat de warmtebehoefte in GJ/jaar of in kWh/jaar?</div>
+            
+            <div class="unit-selector">
+                <button class="unit-btn active" id="btnKwh" onclick="setEenheid('kWh')">kWh/jaar</button>
+                <button class="unit-btn" id="btnGj" onclick="setEenheid('GJ')">GJ/jaar</button>
+            </div>
+        </div>
+
+        <!-- SECTIE 2: WARMTEBEHOEFTE WONING -->
+        <div class="card">
+            <div class="card-title">2. Warmtebehoefte van de woning</div>
+            <div class="card-desc">QH;dis;nren zoals je EP-software die geeft, in <span class="unit-text">kWh/jaar</span>.</div>
+            
+            <div class="form-group">
+                <input type="number" id="qh_woning" placeholder="bijv. 11254" step="any" oninput="updateIntervalDetectie()">
+            </div>
+            <div id="gelezenTekst" style="font-size: 0.8em; color: #64748b; margin-top: -6px; margin-bottom: 6px;"></div>
+
+            <!-- Snelle selectie chips -->
+            <div class="chips-container" id="chipsContainer"></div>
+
+            <div id="adviesMelding" class="advies-tekst"></div>
+            
+            <button class="btn-link" onclick="toggleCustomQh()">Mijn verklaring heeft andere Qh-waarden</button>
+        </div>
+
+        <!-- SECTIE 3: WAARDEN UIT DE VERKLARING -->
+        <div class="card">
+            <div class="card-title">3. Waarden uit de verklaring</div>
+            <div class="card-desc">Neem de waarden uit beide kolommen over.</div>
+
+            <div class="grid-2">
+                <!-- KOLOM 1 -->
+                <div>
+                    <div style="font-weight: bold; color: #0056b3; margin-bottom: 10px;">
+                        Kolom 1 <span id="label_k1_qh" style="font-weight: normal; color: #64748b;"></span>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>QH;dis;nren (<span class="unit-text">kWh/jaar</span>)</label>
+                        <input type="number" id="k1_qh" placeholder="bijv. 11111" step="any" oninput="bereken()">
+                    </div>
+                    <div class="form-group">
+                        <label>ηH;gen;hp;si (COP)</label>
+                        <input type="number" id="k1_eta" placeholder="bijv. 5.697" step="any" oninput="bereken()">
+                    </div>
+                    <div class="form-group">
+                        <label>FH;gen;si;gpref</label>
+                        <input type="number" id="k1_fh" placeholder="bijv. 0.681" step="any" oninput="bereken()">
+                    </div>
+                    <div class="form-group">
+                        <label>WH;aux (<span class="unit-text">kWh/jaar</span>)</label>
+                        <input type="number" id="k1_wh" placeholder="bijv. 141" step="any" oninput="bereken()">
+                    </div>
+                    <div class="form-group">
+                        <label>QH;hp;in (voor BENG 3, optioneel)</label>
+                        <input type="number" id="k1_qhin" placeholder="getal of forfaitair" step="any" oninput="bereken()">
+                    </div>
+                </div>
+
+                <!-- KOLOM 2 -->
+                <div>
+                    <div style="font-weight: bold; color: #0056b3; margin-bottom: 10px;">
+                        Kolom 2 <span id="label_k2_qh" style="font-weight: normal; color: #64748b;"></span>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>QH;dis;nren (<span class="unit-text">kWh/jaar</span>)</label>
+                        <input type="number" id="k2_qh" placeholder="bijv. 16667" step="any" oninput="bereken()">
+                    </div>
+                    <div class="form-group">
+                        <label>ηH;gen;hp;si (COP)</label>
+                        <input type="number" id="k2_eta" placeholder="bijv. 5.720" step="any" oninput="bereken()">
+                    </div>
+                    <div class="form-group">
+                        <label>FH;gen;si;gpref</label>
+                        <input type="number" id="k2_fh" placeholder="bijv. 0.617" step="any" oninput="bereken()">
+                    </div>
+                    <div class="form-group">
+                        <label>WH;aux (<span class="unit-text">kWh/jaar</span>)</label>
+                        <input type="number" id="k2_wh" placeholder="bijv. 154" step="any" oninput="bereken()">
+                    </div>
+                    <div class="form-group">
+                        <label>QH;hp;in (voor BENG 3, optioneel)</label>
+                        <input type="number" id="k2_qhin" placeholder="getal of forfaitair" step="any" oninput="bereken()">
+                    </div>
+                </div>
+            </div>
+
+            <button class="btn-main" onclick="bereken()">Interpoleer</button>
+        </div>
+
+        <!-- RESULTATEN -->
+        <div class="result-card">
+            <h3>Geïnterpoleerde uitkomsten</h3>
+            <div id="resultaten-container">
+                <p style="color: #065f46; font-style: italic; margin: 0;">Vul de gegevens in om de geïnterpoleerde waarden te berekenen.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let huidigeEenheid = 'kWh';
+        const standaardKwhChips = [694, 1389, 2778, 5556, 11111, 16667, 22222, 27778];
+        const standaardGjChips = [2.5, 5.0, 10.0, 20.0, 40.0, 60.0, 80.0, 100.0];
+
+        window.onload = function() {
+            renderChips();
+        };
+
+        function setEenheid(eenheid) {
+            huidigeEenheid = eenheid;
+            document.getElementById('btnKwh').classList.toggle('active', eenheid === 'kWh');
+            document.getElementById('btnGj').classList.toggle('active', eenheid === 'GJ');
+            
+            document.querySelectorAll('.unit-text').forEach(el => {
+                el.textContent = eenheid + '/jaar';
+            });
+
+            renderChips();
+            updateIntervalDetectie();
+        }
+
+        function renderChips() {
+            const container = document.getElementById('chipsContainer');
+            container.innerHTML = '';
+            const lijst = huidigeEenheid === 'kWh' ? standaardKwhChips : standaardGjChips;
+
+            lijst.forEach(val => {
+                const chip = document.createElement('div');
+                chip.className = 'chip';
+                chip.id = `chip-${val}`.replace('.', '_');
+                chip.textContent = val.toLocaleString('nl-NL');
+                chip.onclick = function() {
+                    document.getElementById('qh_woning').value = val;
+                    updateIntervalDetectie();
+                };
+                container.appendChild(chip);
+            });
+        }
+
+        function formatDisplayNum(num) {
+            return num.toLocaleString('nl-NL');
+        }
+
+        function updateIntervalDetectie() {
+            const rawVal = document.getElementById('qh_woning').value;
+            const qh = parseFloat(rawVal);
+            const gelezenTekst = document.getElementById('gelezenTekst');
+            const adviesMelding = document.getElementById('adviesMelding');
+            const labelK1 = document.getElementById('label_k1_qh');
+            const labelK2 = document.getElementById('label_k2_qh');
+
+            // Reset highlights op chips
+            document.querySelectorAll('.chip').forEach(c => c.classList.remove('highlight'));
+
+            if (isNaN(qh) || qh <= 0) {
+                gelezenTekst.textContent = '';
+                adviesMelding.textContent = '';
+                labelK1.textContent = '';
+                labelK2.textContent = '';
+                bereken();
+                return;
+            }
+
+            gelezenTekst.textContent = `Gelezen als ${formatDisplayNum(qh)} ${huidigeEenheid}/jaar`;
+
+            const lijst = huidigeEenheid === 'kWh' ? standaardKwhChips : standaardGjChips;
+            let k1 = null;
+            let k2 = null;
+
+            if (qh <= lijst[0]) {
+                k1 = lijst[0];
+                k2 = lijst[1];
+            } else if (qh >= lijst[lijst.length - 1]) {
+                k1 = lijst[lijst.length - 2];
+                k2 = lijst[lijst.length - 1];
+            } else {
+                for (let i = 0; i < lijst.length - 1; i++) {
+                    if (qh >= lijst[i] && qh <= lijst[i + 1]) {
+                        k1 = lijst[i];
+                        k2 = lijst[i + 1];
+                        break;
+                    }
+                }
+            }
+
+            if (k1 !== null && k2 !== null) {
+                // Highlight de 2 chips
+                const chip1 = document.getElementById(`chip-${k1}`.replace('.', '_'));
+                const chip2 = document.getElementById(`chip-${k2}`.replace('.', '_'));
+                if (chip1) chip1.classList.add('highlight');
+                if (chip2) chip2.classList.add('highlight');
+
+                adviesMelding.textContent = `Neem de kolommen ${formatDisplayNum(k1)} en ${formatDisplayNum(k2)} over uit de verklaring.`;
+
+                // Automatisch invullen van de kolommen indien gewenst
+                document.getElementById('k1_qh').value = k1;
+                document.getElementById('k2_qh').value = k2;
+
+                labelK1.textContent = `${formatDisplayNum(k1)} ${huidigeEenheid}/jaar`;
+                labelK2.textContent = `${formatDisplayNum(k2)} ${huidigeEenheid}/jaar`;
+            }
+
+            bereken();
+        }
+
+        function toggleCustomQh() {
+            alert("Je kunt in Kolom 1 en Kolom 2 direct de gewenste QH-referentiewaarden uit jouw kwaliteitsverklaring handmatig overschrijven.");
+        }
+
+        function formatNL(num, dec = 3) {
+            if (isNaN(num) || num === null) return '-';
+            return num.toFixed(dec).replace('.', ',');
+        }
+
+        function bereken() {
+            const qhWoning = parseFloat(document.getElementById('qh_woning').value);
+            
+            const k1_qh = parseFloat(document.getElementById('k1_qh').value);
+            const k1_eta = parseFloat(document.getElementById('k1_eta').value);
+            const k1_fh = parseFloat(document.getElementById('k1_fh').value);
+            const k1_wh = parseFloat(document.getElementById('k1_wh').value);
+            const k1_qhin = parseFloat(document.getElementById('k1_qhin').value);
+
+            const k2_qh = parseFloat(document.getElementById('k2_qh').value);
+            const k2_eta = parseFloat(document.getElementById('k2_eta').value);
+            const k2_fh = parseFloat(document.getElementById('k2_fh').value);
+            const k2_wh = parseFloat(document.getElementById('k2_wh').value);
+            const k2_qhin = parseFloat(document.getElementById('k2_qhin').value);
+
+            const resContainer = document.getElementById('resultaten-container');
+
+            if (isNaN(qhWoning) || isNaN(k1_qh) || isNaN(k2_qh) || k1_qh === k2_qh) {
+                resContainer.innerHTML = `<p style="color: #065f46; font-style: italic; margin: 0;">Vul minimaal de warmtebehoefte van de woning en de QH-waarden van beide kolommen in.</p>`;
+                return;
+            }
+
+            // Interpolatiefactor t
+            const t = (qhWoning - k1_qh) / (k2_qh - k1_qh);
+
+            const etaResult = !isNaN(k1_eta) && !isNaN(k2_eta) ? k1_eta + t * (k2_eta - k1_eta) : null;
+            const fhResult = !isNaN(k1_fh) && !isNaN(k2_fh) ? k1_fh + t * (k2_fh - k1_fh) : null;
+            const whResult = !isNaN(k1_wh) && !isNaN(k2_wh) ? k1_wh + t * (k2_wh - k1_wh) : null;
+            const qhinResult = !isNaN(k1_qhin) && !isNaN(k2_qhin) ? k1_qhin + t * (k2_qhin - k1_qhin) : null;
+
+            let html = `
+                <div class="result-row">
+                    <span><strong>ηH;gen;hp;si</strong> (COP):</span>
+                    <span class="result-value">${formatNL(etaResult, 3)}</span>
+                </div>
+                <div class="result-row">
+                    <span><strong>FH;gen;si;gpref</strong>:</span>
+                    <span class="result-value">${formatNL(fhResult, 3)}</span>
+                </div>
+                <div class="result-row">
+                    <span><strong>WH;aux</strong> (${huidigeEenheid}/jaar):</span>
+                    <span class="result-value">${formatNL(whResult, 2)}</span>
+                </div>
+            `;
+
+            if (qhinResult !== null) {
+                html += `
+                    <div class="result-row">
+                        <span><strong>QH;hp;in</strong> (BENG 3):</span>
+                        <span class="result-value">${formatNL(qhinResult, 2)}</span>
+                    </div>
+                `;
+            }
+
+            resContainer.innerHTML = html;
+        }
+    </script>
+</body>
+</html>
