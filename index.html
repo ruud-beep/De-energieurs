@@ -15,43 +15,90 @@
             background-attachment: fixed; 
         }
         .menu-card { 
-            background: white; 
-            padding: 30px; 
+            background: rgba(255, 255, 255, 0.96); 
+            padding: 24px; 
             border-radius: 12px; 
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1); 
-            transition: transform 0.2s; 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1); 
+            transition: all 0.2s ease-in-out; 
             border-left: 8px solid #3b82f6; 
             text-align: center; 
-            cursor: pointer; 
+            display: block;
+            text-decoration: none;
         }
         .menu-card:hover { 
-            transform: scale(1.02); 
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+        }
+        .tool-select-card {
+            background: rgba(255, 255, 255, 0.96);
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            border-left: 8px solid #f59e0b;
+        }
+        .tool-option {
+            transition: all 0.2s;
+            border: 2px solid #e2e8f0;
+        }
+        .tool-option:hover {
+            border-color: #2563eb;
+            background-color: #eff6ff;
         }
     </style>
 </head>
 <body class="flex flex-col items-center justify-center min-h-screen p-6">
-    <img src="https://de-energieurs.nl/wp-content/uploads/2023/07/logo_green.png" class="max-w-[200px] mb-10">
+    <!-- Logo -->
+    <img src="https://de-energieurs.nl/wp-content/uploads/2023/07/logo_green.png" class="max-w-[200px] mb-8">
     
-    <div class="grid gap-6 w-full max-w-md">
-        <a href="epw.html" class="menu-card">
+    <div class="grid gap-6 w-full max-w-lg">
+        
+        <!-- 1. OPNAME EPW -->
+        <a href="epw.html" class="menu-card" style="border-color: #3b82f6;">
             <h2 class="text-xl font-bold text-gray-800">Opname EPW</h2>
-            <p class="text-gray-500 mt-2">Opnameformulier Woningbouw</p>
+            <p class="text-gray-500 mt-1 text-sm">Opnameformulier Woningbouw</p>
         </a>
 
+        <!-- 2. OPNAME EPU -->
         <a href="epu.html" class="menu-card" style="border-color: #10b981;">
             <h2 class="text-xl font-bold text-gray-800">Opname EPU</h2>
-            <p class="text-gray-500 mt-2">Opnameformulier Utiliteitsbouw</p>
+            <p class="text-gray-500 mt-1 text-sm">Opnameformulier Utiliteitsbouw</p>
         </a>
 
-        <a href="dakfactor-en-driehoek.html" class="menu-card" style="border-color: #f59e0b;">
-            <h2 class="text-xl font-bold text-gray-800">Tools</h2>
-            <p class="text-gray-500 mt-2">Dakfactor & Driehoek Berekening</p>
-        </a>
+        <!-- 3. KOPJE TOOLS -->
+        <div class="tool-select-card">
+            <h2 class="text-xl font-bold text-gray-800 text-center mb-1">Tools</h2>
+            <p class="text-gray-500 text-sm text-center mb-4">Selecteer een berekeningsmodule:</p>
 
-        <a href="dakfactor%20test%201.21.html" class="menu-card" style="border-color: #ef4444;">
-            <h2 class="text-xl font-bold text-gray-800">Tools Beta</h2>
-            <p class="text-gray-500 mt-2">Dakfactor Calculator </p>
-        </a>
+            <div class="space-y-3">
+                <!-- Tool 1: Verspringende Woning -->
+                <a href="verspringing.html" class="tool-option flex items-center justify-between p-3 rounded-lg bg-white text-left text-decoration-none">
+                    <div>
+                        <div class="font-bold text-gray-800 text-sm">Verspringende Woning</div>
+                        <div class="text-xs text-gray-500">Vrijliggend gevelvlak & verspringing</div>
+                    </div>
+                    <span class="text-blue-600 font-bold text-lg">&rarr;</span>
+                </a>
+
+                <!-- Tool 2: Dakfactor Calculator (met %20 voor de spaties) -->
+                <a href="dakfactor%20test%201.21.html" class="tool-option flex items-center justify-between p-3 rounded-lg bg-white text-left text-decoration-none">
+                    <div>
+                        <div class="font-bold text-gray-800 text-sm">Dakfactor Calculator</div>
+                        <div class="text-xs text-gray-500">BRL 9500 / ISSO 82.1 Schild- & Zadeldak</div>
+                    </div>
+                    <span class="text-blue-600 font-bold text-lg">&rarr;</span>
+                </a>
+
+                <!-- Tool 3: Dak & Driehoek Rekenmachine -->
+                <a href="dakfactor-en-driehoek.html" class="tool-option flex items-center justify-between p-3 rounded-lg bg-white text-left text-decoration-none">
+                    <div>
+                        <div class="font-bold text-gray-800 text-sm">Dak & Driehoek Rekenmachine</div>
+                        <div class="text-xs text-gray-500">Algemene driehoeken & dakdoorsnede</div>
+                    </div>
+                    <span class="text-blue-600 font-bold text-lg">&rarr;</span>
+                </a>
+            </div>
+        </div>
+
     </div>
 </body>
 </html>
