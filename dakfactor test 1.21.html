@@ -19,7 +19,7 @@
         }
 
         .container {
-            background-color: #ffffff; /* fallback voor offline */
+            background-color: #ffffff;
             background-color: rgba(255, 255, 255, 0.96); 
             padding: 25px;
             border-radius: 12px;
@@ -28,12 +28,39 @@
             width: 100%;
         }
 
-        h1 {
-            font-size: 22px;
-            color: #2c3e50;
+        .header-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
             margin-bottom: 20px;
             border-bottom: 2px solid #ecf0f1;
             padding-bottom: 10px;
+        }
+
+        h1 {
+            font-size: 22px;
+            color: #2c3e50;
+            margin: 0;
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 14px;
+            background-color: #f1f5f9;
+            color: #334155;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: bold;
+            border-radius: 6px;
+            border: 1px solid #cbd5e0;
+            transition: all 0.2s;
+        }
+
+        .back-btn:hover {
+            background-color: #e2e8f0;
+            color: #1e293b;
         }
 
         .roof-selector {
@@ -171,7 +198,10 @@
 <body>
 
 <div class="container">
-    <h1>Dakfactor Oppervlakte Calculator (BRL 9500 / ISSO 82.1)</h1>
+    <div class="header-bar">
+        <h1>Dakfactor Oppervlakte Calculator (BRL 9500 / ISSO 82.1)</h1>
+        <a href="index.html" class="back-btn">&#8592; Terug</a>
+    </div>
 
     <div class="roof-selector">
         <button class="type-btn active" id="btnSchild" onclick="setRoofType('schild')">Schilddak / Asymmetrisch (4 Zijden)</button>
@@ -314,7 +344,6 @@ function setRoofType(type) {
     calculate();
 }
 
-// Functie die zowel '10.5' als '10,5' correct omzet naar een getal voor JavaScript
 function parseNumber(id) {
     const rawVal = document.getElementById(id).value || "0";
     const normalizedVal = rawVal.replace(',', '.');
@@ -445,7 +474,6 @@ function draw(L, B, N, dT, dB, dL, dR, triLeft, triRight, depthTop, rTop, rBotto
     const ridgeLeft = {x: ridgeLeftX, y: ridgeY};
     const ridgeRight = {x: ridgeRightX, y: ridgeY};
 
-    // 1. Trapeze / Rechthoek Boven
     ctx.beginPath();
     ctx.moveTo(p1.x, p1.y); ctx.lineTo(p2.x, p2.y);
     ctx.lineTo(ridgeRight.x, ridgeRight.y); ctx.lineTo(ridgeLeft.x, ridgeLeft.y);
@@ -453,14 +481,12 @@ function draw(L, B, N, dT, dB, dL, dR, triLeft, triRight, depthTop, rTop, rBotto
     ctx.fillStyle = '#cbe6ff'; ctx.fill();
     ctx.strokeStyle = '#0284c7'; ctx.lineWidth = 2; ctx.stroke();
 
-    // 2. Trapeze / Rechthoek Onder
     ctx.beginPath();
     ctx.moveTo(p4.x, p4.y); ctx.lineTo(p3.x, p3.y);
     ctx.lineTo(ridgeRight.x, ridgeRight.y); ctx.lineTo(ridgeLeft.x, ridgeLeft.y);
     ctx.closePath();
     ctx.fillStyle = '#cbe6ff'; ctx.fill(); ctx.stroke();
 
-    // 3. Driehoek Links
     if (dL > 0) {
         ctx.beginPath();
         ctx.moveTo(p1.x, p1.y); ctx.lineTo(p4.x, p4.y);
@@ -470,7 +496,6 @@ function draw(L, B, N, dT, dB, dL, dR, triLeft, triRight, depthTop, rTop, rBotto
         ctx.strokeStyle = '#16a34a'; ctx.stroke();
     }
 
-    // 4. Driehoek Rechts
     if (dR > 0) {
         ctx.beginPath();
         ctx.moveTo(p2.x, p2.y); ctx.lineTo(p3.x, p3.y);
@@ -480,12 +505,10 @@ function draw(L, B, N, dT, dB, dL, dR, triLeft, triRight, depthTop, rTop, rBotto
         ctx.strokeStyle = '#16a34a'; ctx.stroke();
     }
 
-    // 5. Rode Noklijn
     ctx.beginPath();
     ctx.moveTo(ridgeLeft.x, ridgeLeft.y); ctx.lineTo(ridgeRight.x, ridgeRight.y);
     ctx.strokeStyle = '#dc2626'; ctx.lineWidth = 3; ctx.stroke();
 
-    // Labels op diagram
     ctx.fillStyle = '#1e293b'; ctx.font = 'bold 12px Arial'; ctx.textAlign = 'center';
     ctx.fillText(`Boven (${dT}°) - ${rTop.toFixed(2)} m²`, startX + lScaled/2, startY + (ridgeY - startY) * 0.5);
     ctx.fillText(`Onder (${dB}°) - ${rBottom.toFixed(2)} m²`, startX + lScaled/2, ridgeY + (startY + bScaled - ridgeY) * 0.5);
