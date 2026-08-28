@@ -332,7 +332,18 @@ function calculate() {
     const dfLeftVal = degLeft > 0 ? (1 / Math.cos(degLeft * Math.PI / 180)) : 0;
     const dfRightVal = degRight > 0 ? (1 / Math.cos(degRight * Math.PI / 180)) : 0;
 
-    // Dynamische grondvlakverdeling op basis van hellingshoeken
+    // Dynamische positie van de nok op de Y-as
+    let depthTop = B / 2;
+    let depthBottom = B / 2;
+
+    if (degTop > 0 && degBottom > 0) {
+        const tanTop = Math.tan(degTop * Math.PI / 180);
+        const tanBottom = Math.tan(degBottom * Math.PI / 180);
+        depthTop = B * (tanBottom / (tanTop + tanBottom));
+        depthBottom = B - depthTop;
+    }
+
+    // Dieptes van de driehoeken aan de zijkanten
     const isLeftActive = degLeft > 0;
     const isRightActive = degRight > 0;
 
@@ -344,22 +355,19 @@ function calculate() {
         triDepthRight = (L - N) / 2;
     } else if (isLeftActive && !isRightActive) {
         triDepthLeft = L - N;
-        triDepthRight = 0;
     } else if (!isLeftActive && isRightActive) {
-        triDepthLeft = 0;
         triDepthRight = L - N;
-    } else {
-        triDepthLeft = 0;
-        triDepthRight = 0;
     }
 
+    // Grondoppervlaktes per vlak
     const floorLeft = isLeftActive ? (0.5 * B * triDepthLeft) : 0;
     const floorRight = isRightActive ? (0.5 * B * triDepthRight) : 0;
 
     const totalFloor = L * B;
     const remainingFloor = totalFloor - (floorLeft + floorRight);
-    const floorTop = remainingFloor / 2;
-    const floorBottom = remainingFloor / 2;
+
+    const floorTop = remainingFloor * (depthTop / B);
+    const floorBottom = remainingFloor * (depthBottom / B);
 
     // Dakoppervlaktes berekenen
     const roofTop = floorTop * (degTop > 0 ? dfTopVal : 0);
@@ -369,7 +377,7 @@ function calculate() {
 
     const totalRoof = roofTop + roofBottom + roofLeft + roofRight;
 
-    // Vormnamen bepalen voor de tabel
+    // Vormnamen bepalen voor tabel
     document.getElementById('vTop').textContent = (triDepthLeft === 0 && triDepthRight === 0) ? "Rechthoek" : "Trapeze";
     document.getElementById('vBottom').textContent = (triDepthLeft === 0 && triDepthRight === 0) ? "Rechthoek" : "Trapeze";
     document.getElementById('vLeft').textContent = isLeftActive ? "Driehoek" : "Gevel (0°)";
@@ -399,10 +407,10 @@ function calculate() {
     document.getElementById('fTotal').textContent = totalFloor.toFixed(2) + " m²";
     document.getElementById('rTotal').textContent = totalRoof.toFixed(2) + " m²";
 
-    draw(L, B, N, degTop, degBottom, degLeft, degRight, triDepthLeft, triDepthRight, roofTop, roofBottom, roofLeft, roofRight);
+    draw(L, B, N, degTop, degBottom, degLeft, degRight, triDepthLeft, triDepthRight, depthTop, roofTop, roofBottom, roofLeft, roofRight);
 }
 
-function draw(L, B, N, dT, dB, dL, dR, triLeft, triRight, rTop, rBottom, rLeft, rRight) {
+function draw(L, B, N, dT, dB, dL, dR, triLeft, triRight, depthTop, rTop, rBottom, rLeft, rRight) {
     const canvas = document.getElementById('roofCanvas');
     const ctx = canvas.getContext('2d');
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -427,8 +435,10 @@ function draw(L, B, N, dT, dB, dL, dR, triLeft, triRight, rTop, rBottom, rLeft, 
     const ridgeLeftX = startX + (triLeft * scale);
     const ridgeRightX = startX + lScaled - (triRight * scale);
 
-    const ridgeLeft = {x: ridgeLeftX, y: startY + bScaled / 2};
-    const ridgeRight = {x: ridgeRightX, y: startY + bScaled / 2};
+    const ridgeY = startY + (depthTop * scale);
+
+    const ridgeLeft = {x: ridgeLeftX, y: ridgeY};
+    const ridgeRight = {x: ridgeRightX, y: ridgeY};
 
     // 1. Trapeze / Rechthoek Boven
     ctx.beginPath();
@@ -472,26 +482,26 @@ function draw(L, B, N, dT, dB, dL, dR, triLeft, triRight, rTop, rBottom, rLeft, 
 
     // Labels op diagram
     ctx.fillStyle = '#1e293b'; ctx.font = 'bold 12px Arial'; ctx.textAlign = 'center';
-    ctx.fillText(`Boven (${dT}°) - ${rTop.toFixed(2)} m²`, startX + lScaled/2, startY + bScaled * 0.25);
-    ctx.fillText(`Onder (${dB}°) - ${rBottom.toFixed(2)} m²`, startX + lScaled/2, startY + bScaled * 0.78);
+    ctx.fillText(`Boven (${dT}°) - ${rTop.toFixed(2)} m²`, startX + lScaled/2, startY + (ridgeY - startY) * 0.5);
+    ctx.fillText(`Onder (${dB}°) - ${rBottom.toFixed(2)} m²`, startX + lScaled/2, ridgeY + (startY + bScaled - ridgeY) * 0.5);
     
     ctx.textAlign = 'left';
     if (dL > 0) {
-        ctx.fillText(`Links (${dL}°)`, startX + 10, startY + bScaled/2 - 10);
-        ctx.fillText(`${rLeft.toFixed(2)} m²`, startX + 10, startY + bScaled/2 + 10);
+        ctx.fillText(`Links (${dL}°)`, startX + 10, ridgeY - 10);
+        ctx.fillText(`${rLeft.toFixed(2)} m²`, startX + 10, ridgeY + 10);
     } else {
         ctx.fillStyle = '#64748b';
-        ctx.fillText(`Links (Gevel 0°)`, startX + 10, startY + bScaled/2);
+        ctx.fillText(`Links (Gevel 0°)`, startX + 10, ridgeY);
     }
 
     ctx.textAlign = 'right';
     if (dR > 0) {
         ctx.fillStyle = '#1e293b';
-        ctx.fillText(`Rechts (${dR}°)`, startX + lScaled - 10, startY + bScaled/2 - 10);
-        ctx.fillText(`${rRight.toFixed(2)} m²`, startX + lScaled - 10, startY + bScaled/2 + 10);
+        ctx.fillText(`Rechts (${dR}°)`, startX + lScaled - 10, ridgeY - 10);
+        ctx.fillText(`${rRight.toFixed(2)} m²`, startX + lScaled - 10, ridgeY + 10);
     } else {
         ctx.fillStyle = '#64748b';
-        ctx.fillText(`Rechts (Gevel 0°)`, startX + lScaled - 10, startY + bScaled/2);
+        ctx.fillText(`Rechts (Gevel 0°)`, startX + lScaled - 10, ridgeY);
     }
 
     ctx.fillStyle = '#dc2626'; ctx.textAlign = 'center';
