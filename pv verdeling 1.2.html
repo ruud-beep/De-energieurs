@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Collectieve PV-Installatie Toewijzing (EPW)</title>
+    <style>
+        body { 
+            font-family: 'Segoe UI', Arial, sans-serif; 
+            background-color: #f0f2f5; 
+            background-image: url('achtergrond1.jpg'); 
+            background-size: cover; 
+            background-position: center; 
+            background-attachment: fixed; 
+            padding: 20px; 
+            color: #333; 
+            line-height: 1.6;
+        }
+        .container { 
+            max-width: 900px; 
+            margin: 0 auto; 
+            background: #fff; 
+            padding: 30px; 
+            border-radius: 8px; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1); 
+        }
+        .btn-back {
+            position: fixed;
+            top: 16px;
+            left: 16px;
+            background-color: #1f2937;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: bold;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            text-decoration: none;
+            z-index: 100;
+            transition: background-color 0.2s;
+            font-family: 'Segoe UI', Arial, sans-serif;
+        }
+        .btn-back:hover {
+            background-color: #374151;
+            text-decoration: none;
+        }
+        h1 { 
+            font-size: 1.6em; 
+            color: #0056b3; 
+            border-bottom: 2px solid #e9ecef;
+            padding-bottom: 10px;
+            margin-top: 0;
+        }
+        h2 {
+            font-size: 1.2em;
+            color: #333;
+            margin-top: 25px;
+            margin-bottom: 10px;
+        }
+        
+        .card {
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 6px;
+            padding: 15px;
+            margin-bottom: 12px;
+            position: relative;
+        }
+        .card-title {
+            font-weight: bold;
+            color: #0056b3;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .grid-main {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            margin-bottom: 10px;
+        }
+        .grid-sub {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 10px;
+            background: #eef2f7;
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 10px;
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+        label { 
+            font-weight: bold; 
+            font-size: 0.85em;
+            color: #555;
+            margin-bottom: 4px;
+        }
+        input[type="number"], select, input[type="text"] { 
+            width: 100%; 
+            padding: 8px 10px; 
+            border: 1px solid #ccc; 
+            border-radius: 4px; 
+            box-sizing: border-box; 
+            font-size: 0.95em;
+        }
+        input:focus, select:focus {
+            border-color: #0056b3;
+            outline: none;
+        }
+
+        .btn-add {
+            background: none;
+            border: none;
+            color: #10b981;
+            font-weight: bold;
+            cursor: pointer;
+            padding: 5px 0;
+            font-size: 0.95em;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            margin-bottom: 15px;
+        }
+        .btn-add:hover {
+            color: #059669;
+            text-decoration: underline;
+        }
+        .btn-remove {
+            color: #ef4444;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 0.85em;
+            font-weight: bold;
+        }
+        .btn-remove:hover { text-decoration: underline; }
+
+        .action-bar {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .btn-main {
+            flex: 1;
+            background-color: #10b981;
+            color: white;
+            border: none;
+            padding: 12px;
+            font-size: 1em;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .btn-main:hover { background-color: #059669; }
+        .btn-reset {
+            background-color: #fff;
+            color: #333;
+            border: 1px solid #ccc;
+            padding: 12px 20px;
+            font-size: 1em;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        .btn-reset:hover { background-color: #f3f4f6; }
+
+        .results-section {
+            margin-top: 30px;
+        }
+        .result-card {
+            background-color: #ecfdf5;
+            border: 1px solid #a7f3d0;
+            border-radius: 6px;
+            padding: 15px;
+            margin-bottom: 12px;
+        }
+        .result-card-header {
+            font-weight: bold;
+            color: #065f46;
+            margin-bottom: 10px;
+            font-size: 1em;
+        }
+        .result-row {
+            display: grid;
+            grid-template-columns: 0.8fr 1.2fr 1.2fr 1fr 0.8fr;
+            gap: 10px;
+            align-items: center;
+            background-color: #ffffff;
+            padding: 8px 12px;
+            border-radius: 4px;
+            margin-top: 6px;
+            font-size: 0.88em;
+            border: 1px solid #e5e7eb;
+        }
+        .subtext {
+            font-size: 0.8em;
+            color: #6b7280;
+            margin-top: 4px;
+        }
+    </style>
+</head>
+<body>
+
+    <a href="index.html" class="btn-back">⬅ Terug naar Menu</a>
+
+    <div class="container">
+        <h1>Collectieve PV-Installatie (EPW)</h1>
+        <p style="font-size: 0.9em; color: #666; margin-top: -5px;">Bereken de verdeling van zonnepanelen over meerdere adressen op basis van de gebruiksoppervlakte.</p>
+
+        <!-- SECTIE 1: PV CONFIGURATIES -->
+        <h2>PV Configuraties</h2>
+        <div id="pv-container"></div>
+        <button class="btn-add" onclick="voegPvToe()">+ Voeg configuratie toe</button>
+
+        <!-- SECTIE 2: ADRESSEN -->
+        <h2>Adressen en Gebruiksoppervlaktes</h2>
+        <div id="adres-container"></div>
+        <button class="btn-add" onclick="voegAdresToe()">+ Voeg adres toe</button>
+
+        <!-- ACTIE KNOPPEN -->
+        <div class="action-bar">
+            <button class="btn-main" onclick="bereken()">Berekening opslaan</button>
+            <button class="btn-reset" onclick="resetForm()">Reset</button>
+        </div>
+        <div class="subtext">De uitkomst loopt automatisch mee met je invoer.</div>
+
+        <!-- RESULTATEN -->
+        <div class="results-section">
+            <h2>Toewijzingen per Adres</h2>
+            <div id="resultaten-container">
+                <p style="color: #666; font-style: italic;">Vul minimaal één PV-configuratie en adres in om resultaten te zien.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let pvCount = 0;
+        let adresCount = 0;
+
+        window.onload = function() {
+            voegPvToe(25, 'Zuid', 15);
+            voegAdresToe('Adres 1', 28);
+            voegAdresToe('Adres 2', 243);
+            bereken();
+        };
+
+        function voegPvToe(opp = 25, orien = 'Zuid', helling = 15) {
+            pvCount++;
+            const container = document.getElementById('pv-container');
+            const id = pvCount;
+            
+            const html = `
+                <div class="card" id="pv-card-${id}">
+                    <div class="card-title">
+                        <span>PV ${id}</span>
+                        ${id > 1 ? `<button class="btn-remove" onclick="verwijderElement('pv-card-${id}')">Verwijder</button>` : ''}
+                    </div>
+                    
+                    <div class="grid-main">
+                        <div class="form-group">
+                            <label>Invoermethode</label>
+                            <select class="pv-methode" onchange="wisselMethode(${id})">
+                                <option value="totaal">Totaal oppervlakte (m²)</option>
+                                <option value="afmetingen">Aantal & Afmetingen panelen</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Oriëntatie</label>
+                            <select class="pv-orientatie" onchange="bereken()">
+                                <option value="Zuid" ${orien==='Zuid'?'selected':''}>Zuid</option>
+                                <option value="Oost" ${orien==='Oost'?'selected':''}>Oost</option>
+                                <option value="West" ${orien==='West'?'selected':''}>West</option>
+                                <option value="Noord" ${orien==='Noord'?'selected':''}>Noord</option>
+                                <option value="Zuid-Oost" ${orien==='Zuid-Oost'?'selected':''}>Zuid-Oost</option>
+                                <option value="Zuid-West" ${orien==='Zuid-West'?'selected':''}>Zuid-West</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Hellingshoek (°)</label>
+                            <input type="number" class="pv-helling" value="${helling}" step="1" oninput="bereken()">
+                        </div>
+                    </div>
+
+                    <!-- INVOER OPTIE A: TOTAAL OPPERVLAK -->
+                    <div class="form-group pv-sectie-totaal" id="pv-totaal-${id}">
+                        <label>Totaal Oppervlak (m²)</label>
+                        <input type="number" class="pv-oppervlak" value="${opp}" step="0.01" oninput="bereken()">
+                    </div>
+
+                    <!-- INVOER OPTIE B: AANTAL EN AFMETINGEN -->
+                    <div class="grid-sub pv-sectie-afmetingen" id="pv-afmetingen-${id}" style="display: none;">
+                        <div class="form-group">
+                            <label>Aantal panelen</label>
+                            <input type="number" class="pv-aantal" value="10" min="1" step="1" oninput="bereken()">
+                        </div>
+                        <div class="form-group">
+                            <label>Lengte paneel (m)</label>
+                            <input type="number" class="pv-lengte" value="1.75" step="0.01" oninput="bereken()">
+                        </div>
+                        <div class="form-group">
+                            <label>Breedte paneel (m)</label>
+                            <input type="number" class="pv-breedte" value="1.04" step="0.01" oninput="bereken()">
+                        </div>
+                    </div>
+
+                </div>
+            `;
+            container.insertAdjacentHTML('beforeend', html);
+            bereken();
+        }
+
+        function wisselMethode(id) {
+            const card = document.getElementById(`pv-card-${id}`);
+            const methode = card.querySelector('.pv-methode').value;
+            const sectieTotaal = document.getElementById(`pv-totaal-${id}`);
+            const sectieAfmetingen = document.getElementById(`pv-afmetingen-${id}`);
+
+            if (methode === 'totaal') {
+                sectieTotaal.style.display = 'block';
+                sectieAfmetingen.style.display = 'none';
+            } else {
+                sectieTotaal.style.display = 'none';
+                sectieAfmetingen.style.display = 'grid';
+            }
+            bereken();
+        }
+
+        function voegAdresToe(naam = '', opp = '') {
+            adresCount++;
+            const container = document.getElementById('adres-container');
+            const id = adresCount;
+            const adresNaam = naam || `Adres ${id}`;
+
+            const html = `
+                <div class="card" id="adres-card-${id}">
+                    <div class="card-title">
+                        <input type="text" class="adres-naam" value="${adresNaam}" style="font-weight:bold; border:none; background:transparent; width:auto;" oninput="bereken()">
+                        <button class="btn-remove" onclick="verwijderElement('adres-card-${id}')">Verwijder</button>
+                    </div>
+                    <div class="form-group">
+                        <label>Gebruiksoppervlakte (m²)</label>
+                        <input type="number" class="adres-oppervlakte" value="${opp}" step="0.1" oninput="bereken()">
+                    </div>
+                </div>
+            `;
+            container.insertAdjacentHTML('beforeend', html);
+            bereken();
+        }
+
+        function verwijderElement(id) {
+            const el = document.getElementById(id);
+            if(el) el.remove();
+            bereken();
+        }
+
+        function resetForm() {
+            document.getElementById('pv-container').innerHTML = '';
+            document.getElementById('adres-container').innerHTML = '';
+            pvCount = 0;
+            adresCount = 0;
+            voegPvToe();
+            voegAdresToe();
+            bereken();
+        }
+
+        function formatNL(num) {
+            return num.toFixed(2).replace('.', ',');
+        }
+
+        function bereken() {
+            const pvCards = document.querySelectorAll('#pv-container .card');
+            const pvLijst = [];
+
+            pvCards.forEach((card, index) => {
+                const methode = card.querySelector('.pv-methode').value;
+                const orien = card.querySelector('.pv-orientatie').value;
+                const helling = card.querySelector('.pv-helling').value || '0';
+                let opp = 0;
+                let oppPerPaneel = 1.82; // Standaard oppervlak (1.75m x 1.04m) bij totaal-invoer
+
+                if (methode === 'totaal') {
+                    opp = parseFloat(card.querySelector('.pv-oppervlak').value) || 0;
+                } else {
+                    const aantal = parseFloat(card.querySelector('.pv-aantal').value) || 0;
+                    const lengte = parseFloat(card.querySelector('.pv-lengte').value) || 0;
+                    const breedte = parseFloat(card.querySelector('.pv-breedte').value) || 0;
+                    oppPerPaneel = lengte * breedte;
+                    opp = aantal * oppPerPaneel;
+                }
+
+                pvLijst.push({ id: index + 1, opp, oppPerPaneel, orien, helling });
+            });
+
+            const adresCards = document.querySelectorAll('#adres-container .card');
+            const adresLijst = [];
+            let totaalGebruiksoppervlakte = 0;
+
+            adresCards.forEach((card) => {
+                const naam = card.querySelector('.adres-naam').value || 'Onbekend adres';
+                const opp = parseFloat(card.querySelector('.adres-oppervlakte').value) || 0;
+                totaalGebruiksoppervlakte += opp;
+                adresLijst.push({ naam, opp });
+            });
+
+            const resContainer = document.getElementById('resultaten-container');
+            
+            if (totaalGebruiksoppervlakte === 0 || pvLijst.length === 0) {
+                resContainer.innerHTML = `<p style="color: #666; font-style: italic;">Voer geldige oppervlaktes in om de toewijzing te berekenen.</p>`;
+                return;
+            }
+
+            let html = '';
+
+            adresLijst.forEach(adres => {
+                const aandeelPrc = (adres.opp / totaalGebruiksoppervlakte) * 100;
+                const aandeelFactor = adres.opp / totaalGebruiksoppervlakte;
+
+                html += `
+                    <div class="result-card">
+                        <div class="result-card-header">
+                            ${adres.naam} (${formatNL(aandeelPrc)}% van totaal)
+                        </div>
+                `;
+
+                pvLijst.forEach(pv => {
+                    const toegekendOpp = pv.opp * aandeelFactor;
+                    const aantalPanelenWoning = pv.oppPerPaneel > 0 ? toegekendOpp / pv.oppPerPaneel : 0;
+
+                    html += `
+                        <div class="result-row">
+                            <span style="font-weight:bold;">PV ${pv.id}</span>
+                            <span><strong>${formatNL(toegekendOpp)} m²</strong></span>
+                            <span>~ <strong>${formatNL(aantalPanelenWoning)}</strong> panelen (${formatNL(pv.oppPerPaneel)} m²/st)</span>
+                            <span>${pv.orien}</span>
+                            <span>${pv.helling}°</span>
+                        </div>
+                    `;
+                });
+
+                html += `</div>`;
+            });
+
+            resContainer.innerHTML = html;
+        }
+    </script>
+</body>
+</html>
