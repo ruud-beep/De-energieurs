@@ -30,7 +30,6 @@
             margin-top: 20px;
         }
 
-        /* Vaste Terug-knop (Overgenomen van PV Verdeling) */
         .btn-back {
             position: fixed;
             top: 16px;
@@ -159,7 +158,7 @@
             border-color: #10b981;
         }
 
-        .toggle-btn[disabled] {
+        .toggle-btn[disabled], button[disabled] {
             background-color: #f1f5f9 !important;
             color: #94a3b8 !important;
             border-color: #cbd5e0 !important;
@@ -194,11 +193,15 @@
             justify-content: space-between;
             font-weight: bold;
             margin-bottom: 10px;
-            font-size: 14px;
+            font-size: 13px;
         }
 
         .vrij-val {
             color: #059669;
+        }
+        
+        .aansluit-val {
+            color: #dc2626;
         }
 
         svg {
@@ -236,29 +239,33 @@
             background-color: #ecfdf5;
             border: 1px solid #a7f3d0;
             border-radius: 8px;
-            padding: 15px;
+            padding: 18px;
             margin-top: 20px;
         }
 
         .result-card h3 {
-            margin: 0 0 10px 0;
+            margin: 0 0 12px 0;
             color: #065f46;
-            font-size: 15px;
+            font-size: 16px;
         }
 
-        .result-grid {
+        .result-grid-4 {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            font-size: 15px;
-            font-weight: bold;
-            color: #047857;
+            gap: 15px;
+            font-size: 14px;
+        }
+
+        .result-box-inner {
+            background: #ffffff;
+            padding: 10px 14px;
+            border-radius: 6px;
+            border: 1px solid #a7f3d0;
         }
     </style>
 </head>
 <body>
 
-<!-- Terug knop in dezelfde stijl als PV Verdeling 2.0 -->
 <a href="index.html" class="btn-back">⬅ Terug naar Menu</a>
 
 <div class="container">
@@ -284,10 +291,10 @@
                     <input type="text" id="goothoogte" value="6" oninput="calculate()">
                 </div>
                 <div class="field">
-                    <label for="nokPositie">Nok vanaf de voorgevel</label>
+                    <label for="nokPositie">Nok vanaf de voorgevel (m)</label>
                     <div class="input-group">
-                        <button class="toggle-btn-small" id="btnMidden" onclick="toggleMidden()">In het midden</button>
-                        <input type="text" id="nokPositie" value="4,5" oninput="manualNokPos()">
+                        <button class="toggle-btn-small" id="btnMidden" onclick="toggleMidden('woning')">In het midden</button>
+                        <input type="text" id="nokPositie" value="4,5" oninput="manualNokPos('woning')">
                     </div>
                 </div>
             </div>
@@ -317,12 +324,23 @@
                     <button class="toggle-btn" id="btnLinksVoor" onclick="setDir('links', 'voor')">Buur staat naar voor</button>
                 </div>
                 <div class="field">
+                    <label for="diepteLinks">Diepte buur (m, leeg = gelijk)</label>
+                    <input type="text" id="diepteLinks" value="" placeholder="bijv. 9.0" oninput="calculate()">
+                </div>
+                <div class="field">
                     <label for="gootLinks">Goothoogte buur (m, leeg = gelijk)</label>
                     <input type="text" id="gootLinks" value="5" oninput="calculate()">
                 </div>
                 <div class="field">
                     <label for="nokLinks">Nokhoogte buur (m, leeg = gelijk)</label>
                     <input type="text" id="nokLinks" value="8" oninput="calculate()">
+                </div>
+                <div class="field">
+                    <label for="nokPosLinks">Nok vanaf voorgevel buur (m, leeg = gelijk)</label>
+                    <div class="input-group">
+                        <button class="toggle-btn-small" id="btnMiddenLinks" onclick="toggleMidden('links')">In het midden</button>
+                        <input type="text" id="nokPosLinks" value="" placeholder="bijv. 4.5" oninput="manualNokPos('links')">
+                    </div>
                 </div>
             </div>
 
@@ -343,12 +361,23 @@
                     <button class="toggle-btn active" id="btnRechtsVoor" onclick="setDir('rechts', 'voor')">Buur staat naar voor</button>
                 </div>
                 <div class="field">
+                    <label for="diepteRechts">Diepte buur (m, leeg = gelijk)</label>
+                    <input type="text" id="diepteRechts" value="" placeholder="bijv. 9.0" oninput="calculate()">
+                </div>
+                <div class="field">
                     <label for="gootRechts">Goothoogte buur (m, leeg = gelijk)</label>
                     <input type="text" id="gootRechts" value="" oninput="calculate()">
                 </div>
                 <div class="field">
                     <label for="nokRechts">Nokhoogte buur (m, leeg = gelijk)</label>
                     <input type="text" id="nokRechts" value="" oninput="calculate()">
+                </div>
+                <div class="field">
+                    <label for="nokPosRechts">Nok vanaf voorgevel buur (m, leeg = gelijk)</label>
+                    <div class="input-group">
+                        <button class="toggle-btn-small" id="btnMiddenRechts" onclick="toggleMidden('rechts')">In het midden</button>
+                        <input type="text" id="nokPosRechts" value="" placeholder="bijv. 4.5" oninput="manualNokPos('rechts')">
+                    </div>
                 </div>
             </div>
         </div>
@@ -361,7 +390,10 @@
             <div class="diagram-box">
                 <div class="diagram-header">
                     <span>Links</span>
-                    <span class="vrij-val" id="txtVrijLinks">0,00 m² vrij</span>
+                    <div>
+                        <span class="vrij-val" id="txtVrijLinks">0,00 m² vrij</span><br>
+                        <span class="aansluit-val" id="txtAansluitLinks">0,00 m² aansluitend</span>
+                    </div>
                 </div>
                 <svg id="svgLinks" viewBox="0 0 300 200"></svg>
             </div>
@@ -370,25 +402,42 @@
             <div class="diagram-box">
                 <div class="diagram-header">
                     <span>Rechts</span>
-                    <span class="vrij-val" id="txtVrijRechts">0,00 m² vrij</span>
+                    <div>
+                        <span class="vrij-val" id="txtVrijRechts">0,00 m² vrij</span><br>
+                        <span class="aansluit-val" id="txtAansluitRechts">0,00 m² aansluitend</span>
+                    </div>
                 </div>
                 <svg id="svgRechts" viewBox="0 0 300 200"></svg>
             </div>
         </div>
 
         <div class="info-text">
-            Elke gevel staat zoals je er van buitenaf op kijkt, dus links ligt de voorgevel rechts in de tekening. De rode stippellijn is de buur. Wanneer de goothoogte van de buur afwijkt, verandert de helling van het rode dakvlak ten opzichte van jouw groene dak.
+            Elke gevel staat zoals je er van buitenaf op kijkt, dus links ligt de voorgevel rechts in de tekening. De rode stippellijn is de buur. Het groene vlak is het vrijliggende zijgevelvlak (buitenlucht), het rode overlapvlak sluit aan aan de buurwoning.
         </div>
 
         <button class="calc-btn" onclick="calculate()">Berekening opslaan</button>
     </div>
 
-    <!-- Vrijliggend gevelvlak Resultaat -->
+    <!-- Zijgevelvlakken Resultaat -->
     <div class="result-card">
-        <h3>Vrijliggend zijgevelvlak</h3>
-        <div class="result-grid">
-            <div>Links: <span id="resLinks">0,00 m²</span></div>
-            <div>Rechts: <span id="resRechts">0,00 m²</span></div>
+        <h3>Overzicht Zijgevelvlakken</h3>
+        <div class="result-grid-4">
+            <div class="result-box-inner">
+                <strong>Links - Vrijliggend:</strong> <br>
+                <span id="resLinksVrij" style="font-size: 16px; color: #059669; font-weight: bold;">0,00 m²</span>
+            </div>
+            <div class="result-box-inner">
+                <strong>Links - Aansluitend:</strong> <br>
+                <span id="resLinksAansluit" style="font-size: 16px; color: #dc2626; font-weight: bold;">0,00 m²</span>
+            </div>
+            <div class="result-box-inner">
+                <strong>Rechts - Vrijliggend:</strong> <br>
+                <span id="resRechtsVrij" style="font-size: 16px; color: #059669; font-weight: bold;">0,00 m²</span>
+            </div>
+            <div class="result-box-inner">
+                <strong>Rechts - Aansluitend:</strong> <br>
+                <span id="resRechtsAansluit" style="font-size: 16px; color: #dc2626; font-weight: bold;">0,00 m²</span>
+            </div>
         </div>
     </div>
 </div>
@@ -397,7 +446,9 @@
 let state = {
     linksDir: 'achter',
     rechtsDir: 'voor',
-    autoNok: true
+    autoNokWoning: true,
+    autoNokLinks: true,
+    autoNokRechts: true
 };
 
 function parseNum(id, fallback = 0) {
@@ -422,15 +473,27 @@ function setDir(side, dir) {
     calculate();
 }
 
-function toggleMidden() {
-    state.autoNok = true;
-    const diepte = parseNum('diepte');
-    document.getElementById('nokPositie').value = (diepte / 2).toString().replace('.', ',');
+function toggleMidden(target) {
+    if (target === 'woning') {
+        state.autoNokWoning = true;
+        const diepte = parseNum('diepte');
+        document.getElementById('nokPositie').value = (diepte / 2).toString().replace('.', ',');
+    } else if (target === 'links') {
+        state.autoNokLinks = true;
+        const diepte = parseNum('diepteLinks', parseNum('diepte'));
+        document.getElementById('nokPosLinks').value = (diepte / 2).toString().replace('.', ',');
+    } else if (target === 'rechts') {
+        state.autoNokRechts = true;
+        const diepte = parseNum('diepteRechts', parseNum('diepte'));
+        document.getElementById('nokPosRechts').value = (diepte / 2).toString().replace('.', ',');
+    }
     calculate();
 }
 
-function manualNokPos() {
-    state.autoNok = false;
+function manualNokPos(target) {
+    if (target === 'woning') state.autoNokWoning = false;
+    if (target === 'links') state.autoNokLinks = false;
+    if (target === 'rechts') state.autoNokRechts = false;
     calculate();
 }
 
@@ -438,7 +501,7 @@ function getRoofHeight(x, diepte, goot, nok, nokPos) {
     if (x < 0 || x > diepte) return 0;
     if (nok === goot) return goot;
     if (x <= nokPos) {
-        return goot + (nok - goot) * (x / (nokPos || 1));
+        return goot + (nok - goot) * (x / Math.max(0.001, nokPos));
     } else {
         return nok - (nok - goot) * ((x - nokPos) / Math.max(0.001, (diepte - nokPos)));
     }
@@ -448,17 +511,19 @@ function updateInputStates() {
     const geenLinks = document.getElementById('geenBuurLinks').checked;
     const geenRechts = document.getElementById('geenBuurRechts').checked;
 
-    ['verspringingLinks', 'gootLinks', 'nokLinks'].forEach(id => {
+    ['verspringingLinks', 'diepteLinks', 'gootLinks', 'nokLinks', 'nokPosLinks'].forEach(id => {
         document.getElementById(id).disabled = geenLinks;
     });
     document.getElementById('btnLinksAchter').disabled = geenLinks;
     document.getElementById('btnLinksVoor').disabled = geenLinks;
+    document.getElementById('btnMiddenLinks').disabled = geenLinks;
 
-    ['verspringingRechts', 'gootRechts', 'nokRechts'].forEach(id => {
+    ['verspringingRechts', 'diepteRechts', 'gootRechts', 'nokRechts', 'nokPosRechts'].forEach(id => {
         document.getElementById(id).disabled = geenRechts;
     });
     document.getElementById('btnRechtsAchter').disabled = geenRechts;
     document.getElementById('btnRechtsVoor').disabled = geenRechts;
+    document.getElementById('btnMiddenRechts').disabled = geenRechts;
 }
 
 function calculate() {
@@ -468,7 +533,7 @@ function calculate() {
     const goot = parseNum('goothoogte');
     const nok = parseNum('nokhoogte');
 
-    if (state.autoNok) {
+    if (state.autoNokWoning) {
         document.getElementById('nokPositie').value = (diepte / 2).toString().replace('.', ',');
     }
     const nokPos = parseNum('nokPositie');
@@ -476,18 +541,28 @@ function calculate() {
     // Buur Links instellingen
     const geenLinks = document.getElementById('geenBuurLinks').checked;
     const verspLinks = parseNum('verspringingLinks');
+    const diepteLinks = parseNum('diepteLinks', diepte);
     const gootLinks = parseNum('gootLinks', goot); 
     const nokLinks = parseNum('nokLinks', nok);
+    if (state.autoNokLinks && !geenLinks) {
+        document.getElementById('nokPosLinks').value = (diepteLinks / 2).toString().replace('.', ',');
+    }
+    const nokPosLinks = parseNum('nokPosLinks', diepteLinks / 2);
 
     // Buur Rechts instellingen
     const geenRechts = document.getElementById('geenBuurRechts').checked;
     const verspRechts = parseNum('verspringingRechts');
+    const diepteRechts = parseNum('diepteRechts', diepte);
     const gootRechts = parseNum('gootRechts', goot); 
     const nokRechts = parseNum('nokRechts', nok);
+    if (state.autoNokRechts && !geenRechts) {
+        document.getElementById('nokPosRechts').value = (diepteRechts / 2).toString().replace('.', ',');
+    }
+    const nokPosRechts = parseNum('nokPosRechts', diepteRechts / 2);
 
-    function calcVrijExact(geenBuur, versp, bGoot, bNok, dir) {
+    function calcExact(geenBuur, versp, bDiepte, bGoot, bNok, bNokPos, dir) {
         const gevelOpp = (diepte * goot) + (0.5 * diepte * (nok - goot));
-        if (geenBuur) return gevelOpp;
+        if (geenBuur) return { vrij: gevelOpp, aansluit: 0 };
 
         let buurStart = 0;
         let buurEnd = diepte;
@@ -497,11 +572,11 @@ function calculate() {
             buurEnd = Math.max(0, diepte - versp);
         } else {
             buurStart = Math.min(diepte, versp);
-            buurEnd = diepte;
+            buurEnd = Math.min(diepte, versp + bDiepte);
         }
 
         const overlapLengte = Math.max(0, buurEnd - buurStart);
-        if (overlapLengte <= 0) return gevelOpp;
+        if (overlapLengte <= 0) return { vrij: gevelOpp, aansluit: 0 };
 
         const steps = 300;
         const dx = overlapLengte / steps;
@@ -512,31 +587,39 @@ function calculate() {
             const hWoning = getRoofHeight(xWoning, diepte, goot, nok, nokPos);
 
             const xBuur = (dir === 'achter') ? (xWoning + versp) : (xWoning - versp);
-            const hBuur = getRoofHeight(xBuur, diepte, bGoot, bNok, nokPos);
+            const hBuur = getRoofHeight(xBuur, bDiepte, bGoot, bNok, bNokPos);
 
             const hBedekt = Math.min(hWoning, hBuur);
             overlapOpp += hBedekt * dx;
         }
 
-        return Math.max(0, gevelOpp - overlapOpp);
+        const vrij = Math.max(0, gevelOpp - overlapOpp);
+        return { vrij: vrij, aansluit: overlapOpp };
     }
 
-    const vrijLinks = calcVrijExact(geenLinks, verspLinks, gootLinks, nokLinks, state.linksDir);
-    const vrijRechts = calcVrijExact(geenRechts, verspRechts, gootRechts, nokRechts, state.rechtsDir);
+    const resL = calcExact(geenLinks, verspLinks, diepteLinks, gootLinks, nokLinks, nokPosLinks, state.linksDir);
+    const resR = calcExact(geenRechts, verspRechts, diepteRechts, gootRechts, nokRechts, nokPosRechts, state.rechtsDir);
 
-    // UI Updates
-    document.getElementById('txtVrijLinks').textContent = vrijLinks.toFixed(2).replace('.', ',') + " m² vrij";
-    document.getElementById('txtVrijRechts').textContent = vrijRechts.toFixed(2).replace('.', ',') + " m² vrij";
+    // UI Updates Diagrammen
+    document.getElementById('txtVrijLinks').textContent = resL.vrij.toFixed(2).replace('.', ',') + " m² vrij";
+    document.getElementById('txtAansluitLinks').textContent = resL.aansluit.toFixed(2).replace('.', ',') + " m² aansluitend";
+
+    document.getElementById('txtVrijRechts').textContent = resR.vrij.toFixed(2).replace('.', ',') + " m² vrij";
+    document.getElementById('txtAansluitRechts').textContent = resR.aansluit.toFixed(2).replace('.', ',') + " m² aansluitend";
     
-    document.getElementById('resLinks').textContent = vrijLinks.toFixed(2).replace('.', ',') + " m²";
-    document.getElementById('resRechts').textContent = vrijRechts.toFixed(2).replace('.', ',') + " m²";
+    // UI Updates Resultatenblok onderaan
+    document.getElementById('resLinksVrij').textContent = resL.vrij.toFixed(2).replace('.', ',') + " m²";
+    document.getElementById('resLinksAansluit').textContent = resL.aansluit.toFixed(2).replace('.', ',') + " m²";
+
+    document.getElementById('resRechtsVrij').textContent = resR.vrij.toFixed(2).replace('.', ',') + " m²";
+    document.getElementById('resRechtsAansluit').textContent = resR.aansluit.toFixed(2).replace('.', ',') + " m²";
 
     // SVG's Tekenen
-    drawSVG('svgLinks', diepte, goot, nok, nokPos, verspLinks, gootLinks, nokLinks, state.linksDir, geenLinks, true);
-    drawSVG('svgRechts', diepte, goot, nok, nokPos, verspRechts, gootRechts, nokRechts, state.rechtsDir, geenRechts, false);
+    drawSVG('svgLinks', diepte, goot, nok, nokPos, verspLinks, diepteLinks, gootLinks, nokLinks, nokPosLinks, state.linksDir, geenLinks, true);
+    drawSVG('svgRechts', diepte, goot, nok, nokPos, verspRechts, diepteRechts, gootRechts, nokRechts, nokPosRechts, state.rechtsDir, geenRechts, false);
 }
 
-function drawSVG(svgId, diepte, goot, nok, nokPos, versp, buurGoot, buurNok, dir, geenBuur, isLinks) {
+function drawSVG(svgId, diepte, goot, nok, nokPos, versp, buurDiepte, buurGoot, buurNok, buurNokPos, dir, geenBuur, isLinks) {
     const svg = document.getElementById(svgId);
     svg.innerHTML = '';
 
@@ -546,7 +629,7 @@ function drawSVG(svgId, diepte, goot, nok, nokPos, versp, buurGoot, buurNok, dir
     const width = 300 - 2 * marginX;
     const groundY = 185;
 
-    const maxBreadth = diepte + (geenBuur ? 0 : versp);
+    const maxBreadth = Math.max(diepte, versp + buurDiepte);
     const scaleX = width / Math.max(maxBreadth, 1);
     const maxH = Math.max(nok, buurNok, 1);
     const scaleY = 140 / maxH;
@@ -562,7 +645,7 @@ function drawSVG(svgId, diepte, goot, nok, nokPos, versp, buurGoot, buurNok, dir
     const yNok = groundY - (nok * scaleY);
     const xNok = isLinks ? (houseXFront - nokPos * scaleX) : (houseXFront + nokPos * scaleX);
 
-    // Eigen Woning
+    // Eigen Woning Polygon
     const housePoints = `${houseXBack},${groundY} ${houseXBack},${yGoot} ${xNok},${yNok} ${houseXFront},${yGoot} ${houseXFront},${groundY}`;
 
     let html = `
@@ -578,12 +661,12 @@ function drawSVG(svgId, diepte, goot, nok, nokPos, versp, buurGoot, buurNok, dir
             buurXStart = isLinks ? (houseXStart + versp * scaleX) : (houseXStart - versp * scaleX);
         }
 
-        const buurXFront = isLinks ? (buurXStart + diepte * scaleX) : buurXStart;
-        const buurXBack = isLinks ? buurXStart : (buurXStart + diepte * scaleX);
+        const buurXFront = isLinks ? (buurXStart + buurDiepte * scaleX) : buurXStart;
+        const buurXBack = isLinks ? buurXStart : (buurXStart + buurDiepte * scaleX);
 
         const buurYGoot = groundY - (buurGoot * scaleY);
         const buurYNok = groundY - (buurNok * scaleY);
-        const buurXNok = isLinks ? (buurXFront - nokPos * scaleX) : (buurXFront + nokPos * scaleX);
+        const buurXNok = isLinks ? (buurXFront - buurNokPos * scaleX) : (buurXFront + buurNokPos * scaleX);
 
         const buurPoints = `${buurXBack},${groundY} ${buurXBack},${buurYGoot} ${buurXNok},${buurYNok} ${buurXFront},${buurYGoot} ${buurXFront},${groundY}`;
 
