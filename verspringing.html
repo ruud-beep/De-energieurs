@@ -318,6 +318,10 @@
                     <button class="toggle-btn" id="btnLinksVoor" onclick="setDir('links', 'voor')">Buur staat naar voor</button>
                 </div>
                 <div class="field">
+                    <label for="diepteLinks">Diepte buur (m, leeg = gelijk)</label>
+                    <input type="text" id="diepteLinks" value="" placeholder="bijv. 9.0" oninput="calculate()">
+                </div>
+                <div class="field">
                     <label for="gootLinks">Goothoogte buur (m, leeg = gelijk)</label>
                     <input type="text" id="gootLinks" value="5" oninput="calculate()">
                 </div>
@@ -342,6 +346,10 @@
                 <div class="toggle-btn-group">
                     <button class="toggle-btn" id="btnRechtsAchter" onclick="setDir('rechts', 'achter')">Buur staat naar achter</button>
                     <button class="toggle-btn active" id="btnRechtsVoor" onclick="setDir('rechts', 'voor')">Buur staat naar voor</button>
+                </div>
+                <div class="field">
+                    <label for="diepteRechts">Diepte buur (m, leeg = gelijk)</label>
+                    <input type="text" id="diepteRechts" value="" placeholder="bijv. 9.0" oninput="calculate()">
                 </div>
                 <div class="field">
                     <label for="gootRechts">Goothoogte buur (m, leeg = gelijk)</label>
@@ -378,7 +386,7 @@
         </div>
 
         <div class="info-text">
-            Elke gevel staat zoals je er van buitenaf op kijkt, dus links ligt de voorgevel rechts in de tekening. De rode stippellijn is de buur. Wanneer de goothoogte van de buur afwijkt, verandert de helling van het rode dakvlak ten opzichte van jouw groene dak.
+            Elke gevel staat zoals je er van buitenaf op kijkt, dus links ligt de voorgevel rechts in de tekening. De rode stippellijn is de buur. Wanneer de diepte of hoogte van de buur afwijkt, past de rode dakcontour zich automatisch aan.
         </div>
 
         <button class="calc-btn" onclick="calculate()">Berekening opslaan</button>
@@ -449,13 +457,13 @@ function updateInputStates() {
     const geenLinks = document.getElementById('geenBuurLinks').checked;
     const geenRechts = document.getElementById('geenBuurRechts').checked;
 
-    ['verspringingLinks', 'gootLinks', 'nokLinks'].forEach(id => {
+    ['verspringingLinks', 'diepteLinks', 'gootLinks', 'nokLinks'].forEach(id => {
         document.getElementById(id).disabled = geenLinks;
     });
     document.getElementById('btnLinksAchter').disabled = geenLinks;
     document.getElementById('btnLinksVoor').disabled = geenLinks;
 
-    ['verspringingRechts', 'gootRechts', 'nokRechts'].forEach(id => {
+    ['verspringingRechts', 'diepteRechts', 'gootRechts', 'nokRechts'].forEach(id => {
         document.getElementById(id).disabled = geenRechts;
     });
     document.getElementById('btnRechtsAchter').disabled = geenRechts;
@@ -477,16 +485,18 @@ function calculate() {
     // Buur Links instellingen
     const geenLinks = document.getElementById('geenBuurLinks').checked;
     const verspLinks = parseNum('verspringingLinks');
+    const diepteLinks = parseNum('diepteLinks', diepte);
     const gootLinks = parseNum('gootLinks', goot); 
     const nokLinks = parseNum('nokLinks', nok);
 
     // Buur Rechts instellingen
     const geenRechts = document.getElementById('geenBuurRechts').checked;
     const verspRechts = parseNum('verspringingRechts');
+    const diepteRechts = parseNum('diepteRechts', diepte);
     const gootRechts = parseNum('gootRechts', goot); 
     const nokRechts = parseNum('nokRechts', nok);
 
-    function calcVrijExact(geenBuur, versp, bGoot, bNok, dir) {
+    function calcVrijExact(geenBuur, versp, bDiepte, bGoot, bNok, dir) {
         const gevelOpp = (diepte * goot) + (0.5 * diepte * (nok - goot));
         if (geenBuur) return gevelOpp;
 
@@ -498,7 +508,7 @@ function calculate() {
             buurEnd = Math.max(0, diepte - versp);
         } else {
             buurStart = Math.min(diepte, versp);
-            buurEnd = diepte;
+            buurEnd = Math.min(diepte, versp + bDiepte);
         }
 
         const overlapLengte = Math.max(0, buurEnd - buurStart);
@@ -513,7 +523,8 @@ function calculate() {
             const hWoning = getRoofHeight(xWoning, diepte, goot, nok, nokPos);
 
             const xBuur = (dir === 'achter') ? (xWoning + versp) : (xWoning - versp);
-            const hBuur = getRoofHeight(xBuur, diepte, bGoot, bNok, nokPos);
+            const bNokPos = bDiepte * (nokPos / diepte); // Schaal nokpositie mee met buur diepte
+            const hBuur = getRoofHeight(xBuur, bDiepte, bGoot, bNok, bNokPos);
 
             const hBedekt = Math.min(hWoning, hBuur);
             overlapOpp += hBedekt * dx;
@@ -522,8 +533,8 @@ function calculate() {
         return Math.max(0, gevelOpp - overlapOpp);
     }
 
-    const vrijLinks = calcVrijExact(geenLinks, verspLinks, gootLinks, nokLinks, state.linksDir);
-    const vrijRechts = calcVrijExact(geenRechts, verspRechts, gootRechts, nokRechts, state.rechtsDir);
+    const vrijLinks = calcVrijExact(geenLinks, verspLinks, diepteLinks, gootLinks, nokLinks, state.linksDir);
+    const vrijRechts = calcVrijExact(geenRechts, verspRechts, diepteRechts, gootRechts, nokRechts, state.rechtsDir);
 
     // UI Updates
     document.getElementById('txtVrijLinks').textContent = vrijLinks.toFixed(2).replace('.', ',') + " m² vrij";
@@ -533,11 +544,11 @@ function calculate() {
     document.getElementById('resRechts').textContent = vrijRechts.toFixed(2).replace('.', ',') + " m²";
 
     // SVG's Tekenen
-    drawSVG('svgLinks', diepte, goot, nok, nokPos, verspLinks, gootLinks, nokLinks, state.linksDir, geenLinks, true);
-    drawSVG('svgRechts', diepte, goot, nok, nokPos, verspRechts, gootRechts, nokRechts, state.rechtsDir, geenRechts, false);
+    drawSVG('svgLinks', diepte, goot, nok, nokPos, verspLinks, diepteLinks, gootLinks, nokLinks, state.linksDir, geenLinks, true);
+    drawSVG('svgRechts', diepte, goot, nok, nokPos, verspRechts, diepteRechts, gootRechts, nokRechts, state.rechtsDir, geenRechts, false);
 }
 
-function drawSVG(svgId, diepte, goot, nok, nokPos, versp, buurGoot, buurNok, dir, geenBuur, isLinks) {
+function drawSVG(svgId, diepte, goot, nok, nokPos, versp, buurDiepte, buurGoot, buurNok, dir, geenBuur, isLinks) {
     const svg = document.getElementById(svgId);
     svg.innerHTML = '';
 
@@ -547,7 +558,7 @@ function drawSVG(svgId, diepte, goot, nok, nokPos, versp, buurGoot, buurNok, dir
     const width = 300 - 2 * marginX;
     const groundY = 185;
 
-    const maxBreadth = diepte + (geenBuur ? 0 : versp);
+    const maxBreadth = Math.max(diepte, versp + buurDiepte);
     const scaleX = width / Math.max(maxBreadth, 1);
     const maxH = Math.max(nok, buurNok, 1);
     const scaleY = 140 / maxH;
@@ -570,7 +581,7 @@ function drawSVG(svgId, diepte, goot, nok, nokPos, versp, buurGoot, buurNok, dir
         <polygon points="${housePoints}" fill="#a7f3d0" stroke="#059669" stroke-width="2" />
     `;
 
-    // Buur Contour
+    // Buur Contour (rekening houdend met aangepaste buurDiepte)
     if (!geenBuur) {
         let buurXStart = houseXStart;
         if (dir === 'achter') {
@@ -579,12 +590,13 @@ function drawSVG(svgId, diepte, goot, nok, nokPos, versp, buurGoot, buurNok, dir
             buurXStart = isLinks ? (houseXStart + versp * scaleX) : (houseXStart - versp * scaleX);
         }
 
-        const buurXFront = isLinks ? (buurXStart + diepte * scaleX) : buurXStart;
-        const buurXBack = isLinks ? buurXStart : (buurXStart + diepte * scaleX);
+        const buurXFront = isLinks ? (buurXStart + buurDiepte * scaleX) : buurXStart;
+        const buurXBack = isLinks ? buurXStart : (buurXStart + buurDiepte * scaleX);
 
         const buurYGoot = groundY - (buurGoot * scaleY);
         const buurYNok = groundY - (buurNok * scaleY);
-        const buurXNok = isLinks ? (buurXFront - nokPos * scaleX) : (buurXFront + nokPos * scaleX);
+        const bNokPos = buurDiepte * (nokPos / diepte);
+        const buurXNok = isLinks ? (buurXFront - bNokPos * scaleX) : (buurXFront + bNokPos * scaleX);
 
         const buurPoints = `${buurXBack},${groundY} ${buurXBack},${buurYGoot} ${buurXNok},${buurYNok} ${buurXFront},${buurYGoot} ${buurXFront},${groundY}`;
 
