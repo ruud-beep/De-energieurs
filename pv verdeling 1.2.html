@@ -241,16 +241,36 @@
         let adresCount = 0;
 
         window.onload = function() {
-            voegPvToe(25, 'Zuid', 15);
-            voegAdresToe('Adres 1', 28);
-            voegAdresToe('Adres 2', 243);
+            voegPvToe();
+            voegAdresToe();
             bereken();
         };
 
-        function voegPvToe(opp = 25, orien = 'Zuid', helling = 15) {
+        function voegPvToe() {
             pvCount++;
             const container = document.getElementById('pv-container');
             const id = pvCount;
+
+            // Zoek de laatste PV kaart om de waarden van over te nemen
+            const bestaandeCards = container.querySelectorAll('.card');
+            let laatstMethode = 'totaal';
+            let laatstOrien = 'Zuid';
+            let laatstHelling = 0;
+            let laatstOpp = 0;
+            let laatstAantal = 0;
+            let laatstLengte = 0;
+            let laatstBreedte = 0;
+
+            if (bestaandeCards.length > 0) {
+                const laatsteCard = bestaandeCards[bestaandeCards.length - 1];
+                laatstMethode = laatsteCard.querySelector('.pv-methode').value;
+                laatstOrien = laatsteCard.querySelector('.pv-orientatie').value;
+                laatstHelling = laatsteCard.querySelector('.pv-helling').value;
+                laatstOpp = laatsteCard.querySelector('.pv-oppervlak').value;
+                laatstAantal = laatsteCard.querySelector('.pv-aantal').value;
+                laatstLengte = laatsteCard.querySelector('.pv-lengte').value;
+                laatstBreedte = laatsteCard.querySelector('.pv-breedte').value;
+            }
             
             const html = `
                 <div class="card" id="pv-card-${id}">
@@ -263,46 +283,46 @@
                         <div class="form-group">
                             <label>Invoermethode</label>
                             <select class="pv-methode" onchange="wisselMethode(${id})">
-                                <option value="totaal">Totaal oppervlakte (m²)</option>
-                                <option value="afmetingen">Aantal & Afmetingen panelen</option>
+                                <option value="totaal" ${laatstMethode==='totaal'?'selected':''}>Totaal oppervlakte (m²)</option>
+                                <option value="afmetingen" ${laatstMethode==='afmetingen'?'selected':''}>Aantal & Afmetingen panelen</option>
                             </select>
                         </div>
                         <div class="form-group">
                             <label>Oriëntatie</label>
                             <select class="pv-orientatie" onchange="bereken()">
-                                <option value="Zuid" ${orien==='Zuid'?'selected':''}>Zuid</option>
-                                <option value="Oost" ${orien==='Oost'?'selected':''}>Oost</option>
-                                <option value="West" ${orien==='West'?'selected':''}>West</option>
-                                <option value="Noord" ${orien==='Noord'?'selected':''}>Noord</option>
-                                <option value="Zuid-Oost" ${orien==='Zuid-Oost'?'selected':''}>Zuid-Oost</option>
-                                <option value="Zuid-West" ${orien==='Zuid-West'?'selected':''}>Zuid-West</option>
+                                <option value="Zuid" ${laatstOrien==='Zuid'?'selected':''}>Zuid</option>
+                                <option value="Oost" ${laatstOrien==='Oost'?'selected':''}>Oost</option>
+                                <option value="West" ${laatstOrien==='West'?'selected':''}>West</option>
+                                <option value="Noord" ${laatstOrien==='Noord'?'selected':''}>Noord</option>
+                                <option value="Zuid-Oost" ${laatstOrien==='Zuid-Oost'?'selected':''}>Zuid-Oost</option>
+                                <option value="Zuid-West" ${laatstOrien==='Zuid-West'?'selected':''}>Zuid-West</option>
                             </select>
                         </div>
                         <div class="form-group">
                             <label>Hellingshoek (°)</label>
-                            <input type="number" class="pv-helling" value="${helling}" step="1" oninput="bereken()">
+                            <input type="number" class="pv-helling" value="${laatstHelling}" step="1" oninput="bereken()">
                         </div>
                     </div>
 
                     <!-- INVOER OPTIE A: TOTAAL OPPERVLAK -->
-                    <div class="form-group pv-sectie-totaal" id="pv-totaal-${id}">
+                    <div class="form-group pv-sectie-totaal" id="pv-totaal-${id}" style="${laatstMethode==='totaal' ? 'display:block;' : 'display:none;'}">
                         <label>Totaal Oppervlak (m²)</label>
-                        <input type="number" class="pv-oppervlak" value="${opp}" step="0.01" oninput="bereken()">
+                        <input type="number" class="pv-oppervlak" value="${laatstOpp}" step="0.01" oninput="bereken()">
                     </div>
 
                     <!-- INVOER OPTIE B: AANTAL EN AFMETINGEN -->
-                    <div class="grid-sub pv-sectie-afmetingen" id="pv-afmetingen-${id}" style="display: none;">
+                    <div class="grid-sub pv-sectie-afmetingen" id="pv-afmetingen-${id}" style="${laatstMethode==='afmetingen' ? 'display:grid;' : 'display:none;'}">
                         <div class="form-group">
                             <label>Aantal panelen</label>
-                            <input type="number" class="pv-aantal" value="10" min="1" step="1" oninput="bereken()">
+                            <input type="number" class="pv-aantal" value="${laatstAantal}" min="0" step="1" oninput="bereken()">
                         </div>
                         <div class="form-group">
                             <label>Lengte paneel (m)</label>
-                            <input type="number" class="pv-lengte" value="1.75" step="0.01" oninput="bereken()">
+                            <input type="number" class="pv-lengte" value="${laatstLengte}" step="0.01" oninput="bereken()">
                         </div>
                         <div class="form-group">
                             <label>Breedte paneel (m)</label>
-                            <input type="number" class="pv-breedte" value="1.04" step="0.01" oninput="bereken()">
+                            <input type="number" class="pv-breedte" value="${laatstBreedte}" step="0.01" oninput="bereken()">
                         </div>
                     </div>
 
@@ -328,7 +348,7 @@
             bereken();
         }
 
-        function voegAdresToe(naam = '', opp = '') {
+        function voegAdresToe(naam = '', opp = 0) {
             adresCount++;
             const container = document.getElementById('adres-container');
             const id = adresCount;
@@ -379,10 +399,11 @@
                 const orien = card.querySelector('.pv-orientatie').value;
                 const helling = card.querySelector('.pv-helling').value || '0';
                 let opp = 0;
-                let oppPerPaneel = 1.82; // Standaard oppervlak (1.75m x 1.04m) bij totaal-invoer
+                let oppPerPaneel = 0;
 
                 if (methode === 'totaal') {
                     opp = parseFloat(card.querySelector('.pv-oppervlak').value) || 0;
+                    oppPerPaneel = 0; // Geen specifieke afmeting als alleen totaal wordt opgegeven
                 } else {
                     const aantal = parseFloat(card.querySelector('.pv-aantal').value) || 0;
                     const lengte = parseFloat(card.querySelector('.pv-lengte').value) || 0;
@@ -428,12 +449,15 @@
                 pvLijst.forEach(pv => {
                     const toegekendOpp = pv.opp * aandeelFactor;
                     const aantalPanelenWoning = pv.oppPerPaneel > 0 ? toegekendOpp / pv.oppPerPaneel : 0;
+                    const paneelTekst = pv.oppPerPaneel > 0 
+                        ? `~ <strong>${formatNL(aantalPanelenWoning)}</strong> panelen (${formatNL(pv.oppPerPaneel)} m²/st)`
+                        : `-`;
 
                     html += `
                         <div class="result-row">
                             <span style="font-weight:bold;">PV ${pv.id}</span>
                             <span><strong>${formatNL(toegekendOpp)} m²</strong></span>
-                            <span>~ <strong>${formatNL(aantalPanelenWoning)}</strong> panelen (${formatNL(pv.oppPerPaneel)} m²/st)</span>
+                            <span>${paneelTekst}</span>
                             <span>${pv.orien}</span>
                             <span>${pv.helling}°</span>
                         </div>
