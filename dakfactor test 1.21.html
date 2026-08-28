@@ -124,26 +124,60 @@
             font-size: 13px;
             color: #4a5568;
             margin-bottom: 4px;
+            font-weight: 600;
         }
 
         input[type="text"] {
             width: 100%;
             padding: 8px;
-            border: 1px solid #cbd5e0;
             border-radius: 4px;
             box-sizing: border-box;
             font-size: 14px;
+            font-weight: bold;
+        }
+
+        /* Unieke Kleurcoderingen voor de Invoervelden */
+        .blue-top-input {
+            border: 2px solid #0284c7 !important;
+            background-color: #e0f2fe !important;
+            color: #0369a1;
+        }
+
+        .cyan-bot-input {
+            border: 2px solid #06b6d4 !important;
+            background-color: #cffafe !important;
+            color: #0891b2;
+        }
+
+        .green-left-input {
+            border: 2px solid #16a34a !important;
+            background-color: #dcfce7 !important;
+            color: #15803d;
+        }
+
+        .purple-right-input {
+            border: 2px solid #9333ea !important;
+            background-color: #f3e8ff !important;
+            color: #7e22ce;
+        }
+
+        .red-input {
+            border: 2px solid #dc2626 !important;
+            background-color: #fee2e2 !important;
+            color: #b91c1c;
+        }
+
+        .yellow-input {
+            border: 2px solid #d97706 !important;
+            background-color: #fef3c7 !important;
+            color: #b45309;
         }
 
         input[disabled] {
-            background-color: #e2e8f0;
-            color: #94a3b8;
+            background-color: #e2e8f0 !important;
+            border-color: #cbd5e0 !important;
+            color: #94a3b8 !important;
             cursor: not-allowed;
-        }
-
-        .green-input {
-            border: 1px solid #2e7d32 !important;
-            background-color: #e8f5e9;
         }
 
         button.calc-btn {
@@ -210,20 +244,51 @@
 
     <div class="grid-inputs">
         <div class="card">
-            <div class="card-title">1. Grondvlak Afmetingen (meters)</div>
+            <div class="card-title">1. Segmenten Grondvlak (meters)</div>
             <div class="field-row">
                 <div class="field">
-                    <label for="length">Totale Lengte (L)</label>
-                    <input type="text" id="length" value="10,0" inputmode="decimal" oninput="calculate()">
+                    <label for="segTopB">Diepte Boven (Noord)</label>
+                    <input type="text" class="blue-top-input" id="segTopB" value="3,0" inputmode="decimal" oninput="calculate()">
                 </div>
                 <div class="field">
-                    <label for="width">Totale Breedte (B)</label>
-                    <input type="text" id="width" value="6,0" inputmode="decimal" oninput="calculate()">
+                    <label for="segBotB">Diepte Onder (Zuid)</label>
+                    <input type="text" class="cyan-bot-input" id="segBotB" value="3,0" inputmode="decimal" oninput="calculate()">
                 </div>
             </div>
             <div class="field">
                 <label for="ridge">Noklengte (N)</label>
-                <input type="text" id="ridge" value="4,0" inputmode="decimal" oninput="calculate()">
+                <input type="text" class="red-input" id="ridge" value="5,50" inputmode="decimal" oninput="calculate()">
+            </div>
+            <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 12px 0;">
+            <div class="field-row">
+                <div class="field">
+                    <label for="triLeftX">Driehoek Links - Diepte</label>
+                    <input type="text" class="green-left-input" id="triLeftX" value="1,50" inputmode="decimal" oninput="calculate()">
+                </div>
+                <div class="field">
+                    <label for="triRightX">Driehoek Rechts - Diepte</label>
+                    <input type="text" class="purple-right-input" id="triRightX" value="3,00" inputmode="decimal" oninput="calculate()">
+                </div>
+            </div>
+            <div class="field-row">
+                <div class="field">
+                    <label for="triLeftYTop">Links - Breedte Boven</label>
+                    <input type="text" class="green-left-input" id="triLeftYTop" value="1,50" inputmode="decimal" oninput="calculate()">
+                </div>
+                <div class="field">
+                    <label for="triRightYTop">Rechts - Breedte Boven</label>
+                    <input type="text" class="purple-right-input" id="triRightYTop" value="3,00" inputmode="decimal" oninput="calculate()">
+                </div>
+            </div>
+            <div class="field-row">
+                <div class="field">
+                    <label for="triLeftYBot">Links - Breedte Onder</label>
+                    <input type="text" class="green-left-input" id="triLeftYBot" value="1,50" inputmode="decimal" oninput="calculate()">
+                </div>
+                <div class="field">
+                    <label for="triRightYBot">Rechts - Breedte Onder</label>
+                    <input type="text" class="purple-right-input" id="triRightYBot" value="3,00" inputmode="decimal" oninput="calculate()">
+                </div>
             </div>
         </div>
 
@@ -232,21 +297,21 @@
             <div class="field-row">
                 <div class="field">
                     <label for="degTop">Helling Boven / Noord (°)</label>
-                    <input type="text" class="green-input" id="degTop" value="45" inputmode="decimal" oninput="calculate()">
+                    <input type="text" class="yellow-input" id="degTop" value="45" inputmode="decimal" oninput="calculate()">
                 </div>
                 <div class="field">
                     <label for="degBottom">Helling Onder / Zuid (°)</label>
-                    <input type="text" class="green-input" id="degBottom" value="45" inputmode="decimal" oninput="calculate()">
+                    <input type="text" class="yellow-input" id="degBottom" value="45" inputmode="decimal" oninput="calculate()">
                 </div>
             </div>
             <div class="field-row">
                 <div class="field">
                     <label for="degLeft">Helling Links / West (°)</label>
-                    <input type="text" class="green-input" id="degLeft" value="45" inputmode="decimal" oninput="calculate()">
+                    <input type="text" class="yellow-input" id="degLeft" value="45" inputmode="decimal" oninput="calculate()">
                 </div>
                 <div class="field">
                     <label for="degRight">Helling Rechts / Oost (°)</label>
-                    <input type="text" class="green-input" id="degRight" value="45" inputmode="decimal" oninput="calculate()">
+                    <input type="text" class="yellow-input" id="degRight" value="45" inputmode="decimal" oninput="calculate()">
                 </div>
             </div>
         </div>
@@ -266,32 +331,32 @@
             </tr>
         </thead>
         <tbody>
-            <tr>
-                <td>Dakvlak Boven (Noord)</td>
+            <tr style="background-color: #f0f9ff;">
+                <td><strong>Dakvlak Boven (Noord)</strong></td>
                 <td id="vTop">Trapeze</td>
                 <td id="fTop">0.00 m²</td>
                 <td id="aTop">0°</td>
                 <td id="dfTop">0.000</td>
                 <td id="rTop"><strong>0.00 m²</strong></td>
             </tr>
-            <tr>
-                <td>Dakvlak Onder (Zuid)</td>
+            <tr style="background-color: #ecfeff;">
+                <td><strong>Dakvlak Onder (Zuid)</strong></td>
                 <td id="vBottom">Trapeze</td>
                 <td id="fBottom">0.00 m²</td>
                 <td id="aBottom">0°</td>
                 <td id="dfBottom">0.000</td>
                 <td id="rBottom"><strong>0.00 m²</strong></td>
             </tr>
-            <tr>
-                <td>Dakvlak Links (West)</td>
+            <tr style="background-color: #f0fdf4;">
+                <td><strong>Dakvlak Links (West)</strong></td>
                 <td id="vLeft">Driehoek</td>
                 <td id="fLeft">0.00 m²</td>
                 <td id="aLeft">0°</td>
                 <td id="dfLeft">0.000</td>
                 <td id="rLeft"><strong>0.00 m²</strong></td>
             </tr>
-            <tr>
-                <td>Dakvlak Rechts (Oost)</td>
+            <tr style="background-color: #faf5ff;">
+                <td><strong>Dakvlak Rechts (Oost)</strong></td>
                 <td id="vRight">Driehoek</td>
                 <td id="fRight">0.00 m²</td>
                 <td id="aRight">0°</td>
@@ -319,26 +384,36 @@ function setRoofType(type) {
     currentRoofType = type;
     const btnSchild = document.getElementById('btnSchild');
     const btnZadel = document.getElementById('btnZadel');
-    const inputRidge = document.getElementById('ridge');
-    const inputLeft = document.getElementById('degLeft');
-    const inputRight = document.getElementById('degRight');
+
+    const inputsToToggle = [
+        'triLeftX', 'triRightX', 
+        'triLeftYTop', 'triRightYTop', 
+        'triLeftYBot', 'triRightYBot', 
+        'degLeft', 'degRight'
+    ];
 
     if (type === 'zadel') {
         btnZadel.classList.add('active');
         btnSchild.classList.remove('active');
-        inputRidge.disabled = true;
-        inputLeft.value = 0;
-        inputLeft.disabled = true;
-        inputRight.value = 0;
-        inputRight.disabled = true;
+        inputsToToggle.forEach(id => {
+            const el = document.getElementById(id);
+            el.value = "0";
+            el.disabled = true;
+        });
     } else {
         btnSchild.classList.add('active');
         btnZadel.classList.remove('active');
-        inputRidge.disabled = false;
-        inputLeft.disabled = false;
-        inputRight.disabled = false;
-        if (inputLeft.value == 0) inputLeft.value = 45;
-        if (inputRight.value == 0) inputRight.value = 45;
+        inputsToToggle.forEach(id => {
+            document.getElementById(id).disabled = false;
+        });
+        if (parseNumber('triLeftX') === 0) document.getElementById('triLeftX').value = "1,50";
+        if (parseNumber('triRightX') === 0) document.getElementById('triRightX').value = "3,00";
+        if (parseNumber('triLeftYTop') === 0) document.getElementById('triLeftYTop').value = "1,50";
+        if (parseNumber('triLeftYBot') === 0) document.getElementById('triLeftYBot').value = "1,50";
+        if (parseNumber('triRightYTop') === 0) document.getElementById('triRightYTop').value = "3,00";
+        if (parseNumber('triRightYBot') === 0) document.getElementById('triRightYBot').value = "3,00";
+        if (parseNumber('degLeft') === 0) document.getElementById('degLeft').value = "45";
+        if (parseNumber('degRight') === 0) document.getElementById('degRight').value = "45";
     }
 
     calculate();
@@ -351,9 +426,20 @@ function parseNumber(id) {
 }
 
 function calculate() {
-    const L = parseNumber('length');
-    const B = parseNumber('width');
-    let N = parseNumber('ridge');
+    const depthTop = parseNumber('segTopB');
+    const depthBottom = parseNumber('segBotB');
+    const N = parseNumber('ridge');
+
+    const triLeftX = parseNumber('triLeftX');
+    const triRightX = parseNumber('triRightX');
+
+    const triLeftYTop = parseNumber('triLeftYTop');
+    const triLeftYBot = parseNumber('triLeftYBot');
+    const triRightYTop = parseNumber('triRightYTop');
+    const triRightYBot = parseNumber('triRightYBot');
+
+    const B = depthTop + depthBottom;
+    const L = triLeftX + N + triRightX;
 
     let degTop = parseNumber('degTop');
     let degBottom = parseNumber('degBottom');
@@ -361,51 +447,29 @@ function calculate() {
     let degRight = parseNumber('degRight');
 
     if (currentRoofType === 'zadel') {
-        N = L;
         degLeft = 0;
         degRight = 0;
-        document.getElementById('ridge').value = L;
     }
 
+    // Dakfactoren (1 / cos(hoek))
     const dfTopVal = degTop > 0 ? (1 / Math.cos(degTop * Math.PI / 180)) : 0;
     const dfBottomVal = degBottom > 0 ? (1 / Math.cos(degBottom * Math.PI / 180)) : 0;
     const dfLeftVal = degLeft > 0 ? (1 / Math.cos(degLeft * Math.PI / 180)) : 0;
     const dfRightVal = degRight > 0 ? (1 / Math.cos(degRight * Math.PI / 180)) : 0;
 
-    let depthTop = B / 2;
-    let depthBottom = B / 2;
+    const isLeftActive = triLeftX > 0 && degLeft > 0;
+    const isRightActive = triRightX > 0 && degRight > 0;
 
-    if (degTop > 0 && degBottom > 0) {
-        const tanTop = Math.tan(degTop * Math.PI / 180);
-        const tanBottom = Math.tan(degBottom * Math.PI / 180);
-        depthTop = B * (tanBottom / (tanTop + tanBottom));
-        depthBottom = B - depthTop;
-    }
+    // Grondoppervlaktes per zijde
+    const floorLeft = isLeftActive ? (0.5 * (triLeftYTop + triLeftYBot) * triLeftX) : 0;
+    const floorRight = isRightActive ? (0.5 * (triRightYTop + triRightYBot) * triRightX) : 0;
 
-    const isLeftActive = degLeft > 0;
-    const isRightActive = degRight > 0;
+    const floorTop = (N + 0.5 * triLeftX + 0.5 * triRightX) * depthTop;
+    const floorBottom = (N + 0.5 * triLeftX + 0.5 * triRightX) * depthBottom;
 
-    let triDepthLeft = 0;
-    let triDepthRight = 0;
+    const totalFloor = floorLeft + floorRight + floorTop + floorBottom;
 
-    if (isLeftActive && isRightActive) {
-        triDepthLeft = (L - N) / 2;
-        triDepthRight = (L - N) / 2;
-    } else if (isLeftActive && !isRightActive) {
-        triDepthLeft = L - N;
-    } else if (!isLeftActive && isRightActive) {
-        triDepthRight = L - N;
-    }
-
-    const floorLeft = isLeftActive ? (0.5 * B * triDepthLeft) : 0;
-    const floorRight = isRightActive ? (0.5 * B * triDepthRight) : 0;
-
-    const totalFloor = L * B;
-    const remainingFloor = totalFloor - (floorLeft + floorRight);
-
-    const floorTop = remainingFloor * (depthTop / B);
-    const floorBottom = remainingFloor * (depthBottom / B);
-
+    // Dakoppervlaktes berekenen
     const roofTop = floorTop * (degTop > 0 ? dfTopVal : 0);
     const roofBottom = floorBottom * (degBottom > 0 ? dfBottomVal : 0);
     const roofLeft = floorLeft * (degLeft > 0 ? dfLeftVal : 0);
@@ -413,11 +477,13 @@ function calculate() {
 
     const totalRoof = roofTop + roofBottom + roofLeft + roofRight;
 
-    document.getElementById('vTop').textContent = (triDepthLeft === 0 && triDepthRight === 0) ? "Rechthoek" : "Trapeze";
-    document.getElementById('vBottom').textContent = (triDepthLeft === 0 && triDepthRight === 0) ? "Rechthoek" : "Trapeze";
+    // Vormnamen
+    document.getElementById('vTop').textContent = (triLeftX === 0 && triRightX === 0) ? "Rechthoek" : "Trapeze";
+    document.getElementById('vBottom').textContent = (triLeftX === 0 && triRightX === 0) ? "Rechthoek" : "Trapeze";
     document.getElementById('vLeft').textContent = isLeftActive ? "Driehoek" : "Gevel (0°)";
     document.getElementById('vRight').textContent = isRightActive ? "Driehoek" : "Gevel (0°)";
 
+    // Tabel invullen
     document.getElementById('fTop').textContent = floorTop.toFixed(2) + " m²";
     document.getElementById('aTop').textContent = degTop + "°";
     document.getElementById('dfTop').textContent = degTop > 0 ? dfTopVal.toFixed(3) : "-";
@@ -441,10 +507,10 @@ function calculate() {
     document.getElementById('fTotal').textContent = totalFloor.toFixed(2) + " m²";
     document.getElementById('rTotal').textContent = totalRoof.toFixed(2) + " m²";
 
-    draw(L, B, N, degTop, degBottom, degLeft, degRight, triDepthLeft, triDepthRight, depthTop, roofTop, roofBottom, roofLeft, roofRight);
+    draw(L, B, N, degTop, degBottom, degLeft, degRight, triLeftX, triRightX, triLeftYTop, triLeftYBot, triRightYTop, triRightYBot, depthTop, roofTop, roofBottom, roofLeft, roofRight);
 }
 
-function draw(L, B, N, dT, dB, dL, dR, triLeft, triRight, depthTop, rTop, rBottom, rLeft, rRight) {
+function draw(L, B, N, dT, dB, dL, dR, triLeftX, triRightX, triLeftYTop, triLeftYBot, triRightYTop, triRightYBot, depthTop, rTop, rBottom, rLeft, rRight) {
     const canvas = document.getElementById('roofCanvas');
     const ctx = canvas.getContext('2d');
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -466,55 +532,78 @@ function draw(L, B, N, dT, dB, dL, dR, triLeft, triRight, depthTop, rTop, rBotto
     const p3 = {x: startX + lScaled, y: startY + bScaled};
     const p4 = {x: startX, y: startY + bScaled};
 
-    const ridgeLeftX = startX + (triLeft * scale);
-    const ridgeRightX = startX + lScaled - (triRight * scale);
+    const ridgeLeftX = startX + (triLeftX * scale);
+    const ridgeRightX = startX + lScaled - (triRightX * scale);
 
     const ridgeY = startY + (depthTop * scale);
 
     const ridgeLeft = {x: ridgeLeftX, y: ridgeY};
     const ridgeRight = {x: ridgeRightX, y: ridgeY};
 
+    const leftTopCorner = {x: startX, y: ridgeY - (triLeftYTop * scale)};
+    const leftBotCorner = {x: startX, y: ridgeY + (triLeftYBot * scale)};
+
+    const rightTopCorner = {x: startX + lScaled, y: ridgeY - (triRightYTop * scale)};
+    const rightBotCorner = {x: startX + lScaled, y: ridgeY + (triRightYBot * scale)};
+
+    // 1. Trapeze / Rechthoek Boven (Blauw)
     ctx.beginPath();
-    ctx.moveTo(p1.x, p1.y); ctx.lineTo(p2.x, p2.y);
-    ctx.lineTo(ridgeRight.x, ridgeRight.y); ctx.lineTo(ridgeLeft.x, ridgeLeft.y);
+    ctx.moveTo(p1.x, p1.y); 
+    ctx.lineTo(p2.x, p2.y);
+    ctx.lineTo(rightTopCorner.x, rightTopCorner.y);
+    ctx.lineTo(ridgeRight.x, ridgeRight.y); 
+    ctx.lineTo(ridgeLeft.x, ridgeLeft.y);
+    ctx.lineTo(leftTopCorner.x, leftTopCorner.y);
     ctx.closePath();
     ctx.fillStyle = '#cbe6ff'; ctx.fill();
     ctx.strokeStyle = '#0284c7'; ctx.lineWidth = 2; ctx.stroke();
 
+    // 2. Trapeze / Rechthoek Onder (Cyaan)
     ctx.beginPath();
-    ctx.moveTo(p4.x, p4.y); ctx.lineTo(p3.x, p3.y);
-    ctx.lineTo(ridgeRight.x, ridgeRight.y); ctx.lineTo(ridgeLeft.x, ridgeLeft.y);
+    ctx.moveTo(p4.x, p4.y); 
+    ctx.lineTo(p3.x, p3.y);
+    ctx.lineTo(rightBotCorner.x, rightBotCorner.y);
+    ctx.lineTo(ridgeRight.x, ridgeRight.y); 
+    ctx.lineTo(ridgeLeft.x, ridgeLeft.y);
+    ctx.lineTo(leftBotCorner.x, leftBotCorner.y);
     ctx.closePath();
-    ctx.fillStyle = '#cbe6ff'; ctx.fill(); ctx.stroke();
+    ctx.fillStyle = '#cffafe'; ctx.fill(); 
+    ctx.strokeStyle = '#0891b2'; ctx.lineWidth = 2; ctx.stroke();
 
-    if (dL > 0) {
+    // 3. Driehoek Links (Groen)
+    if (dL > 0 && triLeftX > 0) {
         ctx.beginPath();
-        ctx.moveTo(p1.x, p1.y); ctx.lineTo(p4.x, p4.y);
+        ctx.moveTo(leftTopCorner.x, leftTopCorner.y); 
+        ctx.lineTo(leftBotCorner.x, leftBotCorner.y);
         ctx.lineTo(ridgeLeft.x, ridgeLeft.y);
         ctx.closePath();
         ctx.fillStyle = '#cbf7d0'; ctx.fill();
         ctx.strokeStyle = '#16a34a'; ctx.stroke();
     }
 
-    if (dR > 0) {
+    // 4. Driehoek Rechts (Paars)
+    if (dR > 0 && triRightX > 0) {
         ctx.beginPath();
-        ctx.moveTo(p2.x, p2.y); ctx.lineTo(p3.x, p3.y);
+        ctx.moveTo(rightTopCorner.x, rightTopCorner.y); 
+        ctx.lineTo(rightBotCorner.x, rightBotCorner.y);
         ctx.lineTo(ridgeRight.x, ridgeRight.y);
         ctx.closePath();
-        ctx.fillStyle = '#cbf7d0'; ctx.fill();
-        ctx.strokeStyle = '#16a34a'; ctx.stroke();
+        ctx.fillStyle = '#f3e8ff'; ctx.fill();
+        ctx.strokeStyle = '#9333ea'; ctx.stroke();
     }
 
+    // 5. Rode Noklijn (Rood)
     ctx.beginPath();
     ctx.moveTo(ridgeLeft.x, ridgeLeft.y); ctx.lineTo(ridgeRight.x, ridgeRight.y);
     ctx.strokeStyle = '#dc2626'; ctx.lineWidth = 3; ctx.stroke();
 
+    // Labels op diagram
     ctx.fillStyle = '#1e293b'; ctx.font = 'bold 12px Arial'; ctx.textAlign = 'center';
-    ctx.fillText(`Boven (${dT}°) - ${rTop.toFixed(2)} m²`, startX + lScaled/2, startY + (ridgeY - startY) * 0.5);
-    ctx.fillText(`Onder (${dB}°) - ${rBottom.toFixed(2)} m²`, startX + lScaled/2, ridgeY + (startY + bScaled - ridgeY) * 0.5);
+    ctx.fillText(`Boven (${dT}°) - ${rTop.toFixed(2)} m²`, startX + lScaled/2, startY + (ridgeY - startY) * 0.4);
+    ctx.fillText(`Onder (${dB}°) - ${rBottom.toFixed(2)} m²`, startX + lScaled/2, ridgeY + (startY + bScaled - ridgeY) * 0.6);
     
     ctx.textAlign = 'left';
-    if (dL > 0) {
+    if (dL > 0 && triLeftX > 0) {
         ctx.fillText(`Links (${dL}°)`, startX + 10, ridgeY - 10);
         ctx.fillText(`${rLeft.toFixed(2)} m²`, startX + 10, ridgeY + 10);
     } else {
@@ -523,7 +612,7 @@ function draw(L, B, N, dT, dB, dL, dR, triLeft, triRight, depthTop, rTop, rBotto
     }
 
     ctx.textAlign = 'right';
-    if (dR > 0) {
+    if (dR > 0 && triRightX > 0) {
         ctx.fillStyle = '#1e293b';
         ctx.fillText(`Rechts (${dR}°)`, startX + lScaled - 10, ridgeY - 10);
         ctx.fillText(`${rRight.toFixed(2)} m²`, startX + lScaled - 10, ridgeY + 10);
