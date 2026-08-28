@@ -6,35 +6,52 @@
     <title>De-Energieurs Portaal</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-body { 
-    font-family: 'Segoe UI', sans-serif; 
-    background-color: #f0f2f5; 
-    background-image: url('achtergrond1.jpg'); 
-    background-size: cover; 
-    background-position: center; 
-    background-attachment: fixed; 
-}
-        .menu-card { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); transition: transform 0.2s; border-left: 8px solid #3b82f6; text-align: center; cursor: pointer; }
-        .menu-card:hover { transform: scale(1.02); }
+        body { 
+            font-family: 'Segoe UI', sans-serif; 
+            background-color: #f0f2f5; 
+            background-image: url('achtergrond1.jpg'); 
+            background-size: cover; 
+            background-position: center; 
+            background-attachment: fixed; 
+        }
+        .menu-card { 
+            background: white; 
+            padding: 30px; 
+            border-radius: 12px; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1); 
+            transition: transform 0.2s; 
+            border-left: 8px solid #3b82f6; 
+            text-align: center; 
+            cursor: pointer; 
+        }
+        .menu-card:hover { 
+            transform: scale(1.02); 
+        }
     </style>
 </head>
 <body class="flex flex-col items-center justify-center min-h-screen p-6">
     <img src="https://de-energieurs.nl/wp-content/uploads/2023/07/logo_green.png" class="max-w-[200px] mb-10">
     
-<div class="grid gap-6 w-full max-w-md">
-    <a href="epw.html" class="menu-card">
-        <h2 class="text-xl font-bold text-gray-800">Opname EPW</h2>
-        <p class="text-gray-500 mt-2">Opnameformulier Woningbouw</p>
-    </a>
+    <div class="grid gap-6 w-full max-w-md">
+        <a href="epw.html" class="menu-card">
+            <h2 class="text-xl font-bold text-gray-800">Opname EPW</h2>
+            <p class="text-gray-500 mt-2">Opnameformulier Woningbouw</p>
+        </a>
 
-    <a href="epu.html" class="menu-card" style="border-color: #10b981;">
-        <h2 class="text-xl font-bold text-gray-800">Opname EPU</h2>
-        <p class="text-gray-500 mt-2">Opnameformulier Utiliteitsbouw</p>
-    </a>
-    <a href="dakfactor-en-driehoek.html" class="menu-card" style="border-color: #f59e0b;">
-        <h2 class="text-xl font-bold text-gray-800">Tools</h2>
-        <p class="text-gray-500 mt-2">Dakfactor & Driehoek Berekening</p>
-    </a>
-</div>
+        <a href="epu.html" class="menu-card" style="border-color: #10b981;">
+            <h2 class="text-xl font-bold text-gray-800">Opname EPU</h2>
+            <p class="text-gray-500 mt-2">Opnameformulier Utiliteitsbouw</p>
+        </a>
+
+        <a href="dakfactor-en-driehoek.html" class="menu-card" style="border-color: #f59e0b;">
+            <h2 class="text-xl font-bold text-gray-800">Tools</h2>
+            <p class="text-gray-500 mt-2">Dakfactor & Driehoek Berekening</p>
+        </a>
+
+        <a href="dakfactor%20test%201.21.html" class="menu-card" style="border-color: #ef4444;">
+            <h2 class="text-xl font-bold text-gray-800">Tools Beta</h2>
+            <p class="text-gray-500 mt-2">Dakfactor Calculator (BRL 9500 / ISSO 82.1)</p>
+        </a>
+    </div>
 </body>
 </html>
