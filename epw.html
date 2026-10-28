@@ -85,8 +85,28 @@ body {
         { id: "q21", label: "bouwwijze muur", type: "radio", options: ["Licht", "Zwaar", "Zeer zwaar"], comment: true, photo: true, conditionalContent: true },
         { id: "q22", label: "bouwwijze vloer", type: "radio", options: ["Licht", "Zwaar", "Zeer zwaar"], comment: true, photo: true, conditionalContent: true },
 
-        { id: "q23", label: "Wat is de oriëntatie van de voorgevel van de woning?", type: "radio", options: ["Noord", "Noordoost", "Oost", "Zuidoost", "Zuid", "Zuidwest", "West", "Noordwest"], comment: true, photo: true },
-	{ id: "opmerkingen", label: "Algemene Opmerkingen", comment: true, isOptional: true, photo: true  }
+{ id: "q23", label: "Wat is de oriëntatie van de voorgevel van de woning?", type: "radio", options: ["Noord", "Noordoost", "Oost", "Zuidoost", "Zuid", "Zuidwest", "West", "Noordwest"], comment: true, photo: true },
+        { id: "opmerkingen", label: "Algemene Opmerkingen", comment: true, isOptional: true, photo: true },
+        { 
+            id: "q_maatwerk", 
+            label: "Is er sprake van maatwerk advies?", 
+            type: "radio", 
+            options: ["Nee", "Ja"] 
+        },
+        { 
+            id: "q_maatwerk_wensen", 
+            label: "Wat zijn de wensen van de klant?", 
+            type: "text", 
+            isDependent: true,
+            isOptional: true 
+        },
+        { 
+            id: "q_maatwerk_fitten", 
+            label: "Heeft klant behoefte aan fitten?", 
+            type: "radio", 
+            options: ["Nee", "Ja"], 
+            isDependent: true 
+        }
     ];
 
     const formData = {}; 
@@ -96,6 +116,9 @@ let isOpgeslagen = false; // NIEUW: Houdt bij of het werk is geëxporteerd
     function renderApp() {
         const app = document.getElementById('app');
         app.innerHTML = ""; 
+// Standaardwaarden instellen indien nog niet gekozen
+        if (!formData['q_maatwerk']) formData['q_maatwerk'] = "Nee";
+        if (!formData['q_maatwerk_fitten']) formData['q_maatwerk_fitten'] = "Nee";
         questions.forEach(q => {
             const card = document.createElement('div');
             card.className = "card" + (q.isDependent ? " hidden" : "");
@@ -105,7 +128,8 @@ let isOpgeslagen = false; // NIEUW: Houdt bij of het werk is geëxporteerd
             if (q.type === 'radio') {
                 html += `<div class="radio-group">`;
                 q.options.forEach(opt => {
-                    html += `<label class="radio-label"><input type="radio" name="${q.id}" value="${opt}" onchange="updateValue('${q.id}', this.value)">${opt}</label>`;
+                    const isChecked = (formData[q.id] === opt) ? "checked" : "";
+html += `<label class="radio-label"><input type="radio" name="${q.id}" value="${opt}" ${isChecked} onchange="updateValue('${q.id}', this.value)">${opt}</label>`;
                 });
                 html += `</div>`;
             } else {
@@ -165,6 +189,14 @@ let isOpgeslagen = false; // NIEUW: Houdt bij of het werk is geëxporteerd
 
     function checkDependencies() {
         toggleSection('q1', formData['q1'] === 'Ja');
+// Maatwerkadvies afhankelijkheden
+        const isMaatwerk = formData['q_maatwerk'] === "Ja";
+        toggleCard('q_maatwerk_wensen', isMaatwerk);
+        toggleCard('q_maatwerk_fitten', isMaatwerk);
+        if (!isMaatwerk) {
+            delete formData['q_maatwerk_wensen'];
+            formData['q_maatwerk_fitten'] = "Nee";
+        }
         toggleSection('q2', formData['q2'] === '2 rekenzones' || formData['q2'] === '3 of meer');
         toggleSection('q12', formData['q12'] && formData['q12'] !== 'Nee');
         toggleSection('q18', formData['q18'] === 'Ja');
@@ -383,6 +415,7 @@ async function generateWord() {
     });
 
     renderApp();
+    checkDependencies();
 </script>
 </body>
 </html>
