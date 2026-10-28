@@ -82,8 +82,28 @@ body {
         { id: "q18", label: "Zonwering", type: "radio", options: ["Ja", "Nee"], extra: "Type & bediening:", conditionalContent: true },
         { id: "q19", label: "Paneel aanwezig?", type: "radio", options: ["Ja, geïsoleerd", "Ja" , "Nee"], comment: true, conditionalContent: true },
         { id: "q20", label: "Vloer grenst aan?", type: "radio", options: ["Grond", "Kruipruimte", "AVR", "Kelder", "Buiten", "Anders"], comment: true, hasCheckbox: "Grenst vloer aan meer? Zo ja, verklaar dit bij opmerkingen" },
- 	{ id: "q20", label: "Type verlichting", comment: true, },
-	{ id: "q21", label: "Wat is de oriëntatie van de voorgevel van de woning?", type: "radio", options: ["Noord", "Noordoost", "Oost", "Zuidoost", "Zuid", "Zuidwest", "West", "Noordwest"], comment: true, photo: true }
+ 	{ id: "q20_licht", label: "Type verlichting", comment: true },
+	{ id: "q21", label: "Wat is de oriëntatie van de voorgevel van de woning?", type: "radio", options: ["Noord", "Noordoost", "Oost", "Zuidoost", "Zuid", "Zuidwest", "West", "Noordwest"], comment: true, photo: true },
+        { 
+            id: "q_maatwerk", 
+            label: "Is er sprake van maatwerk advies?", 
+            type: "radio", 
+            options: ["Nee", "Ja"] 
+        },
+        { 
+            id: "q_maatwerk_wensen", 
+            label: "Wat zijn de wensen van de klant?", 
+            type: "text", 
+            isDependent: true,
+            isOptional: true 
+        },
+        { 
+            id: "q_maatwerk_fitten", 
+            label: "Heeft klant behoefte aan fitten?", 
+            type: "radio", 
+            options: ["Nee", "Ja"], 
+            isDependent: true 
+        }
     ];
 
     const formData = {}; 
@@ -92,6 +112,9 @@ body {
     function renderApp() {
         const app = document.getElementById('app');
         app.innerHTML = ""; 
+// Standaardwaarden instellen indien nog niet gekozen
+        if (!formData['q_maatwerk']) formData['q_maatwerk'] = "Nee";
+        if (!formData['q_maatwerk_fitten']) formData['q_maatwerk_fitten'] = "Nee";
         questions.forEach(q => {
             const card = document.createElement('div');
             card.className = "card" + (q.isDependent ? " hidden" : "");
@@ -101,7 +124,8 @@ body {
             if (q.type === 'radio') {
                 html += `<div class="radio-group">`;
                 q.options.forEach(opt => {
-                    html += `<label class="radio-label"><input type="radio" name="${q.id}" value="${opt}" onchange="updateValue('${q.id}', this.value)">${opt}</label>`;
+                    const isChecked = (formData[q.id] === opt) ? "checked" : "";
+html += `<label class="radio-label"><input type="radio" name="${q.id}" value="${opt}" ${isChecked} onchange="updateValue('${q.id}', this.value)">${opt}</label>`;
                 });
                 html += `</div>`;
             } else {
@@ -177,6 +201,14 @@ function updateValue(id, value) {
             const gemOpp = document.getElementById(`gem_opp_container_${id}`);
             if(gemOpp) formData[id + '_gem'] === 'Ja' ? gemOpp.classList.remove('hidden') : gemOpp.classList.add('hidden');
         });
+// Maatwerkadvies afhankelijkheden
+        const isMaatwerk = formData['q_maatwerk'] === "Ja";
+        toggleCard('q_maatwerk_wensen', isMaatwerk);
+        toggleCard('q_maatwerk_fitten', isMaatwerk);
+        if (!isMaatwerk) {
+            delete formData['q_maatwerk_wensen'];
+            formData['q_maatwerk_fitten'] = "Nee";
+        }
     }
 
     function toggleSection(id, condition) {
@@ -345,7 +377,8 @@ async function generateWord() {
             console.log("Klik eerst in een vak om een foto te plakken.");
         }
     });
-    renderApp();
+   renderApp();
+    checkDependencies();
 </script>
 </body>
 </html>
