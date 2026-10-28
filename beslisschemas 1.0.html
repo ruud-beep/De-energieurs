@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Beslisschema's - De Energieurs</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <style>
+        body { 
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; 
+            background-color: #f0f2f5; 
+            background-image: url('achtergrond1.jpg'); 
+            background-size: cover; 
+            background-position: center top; 
+            background-attachment: fixed; 
+            padding-bottom: 80px; 
+        }
+        .container-custom { max-width: 960px; margin: 0 auto; padding: 20px 16px; }
+        
+        .card-menu {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+            border: 1px solid #e2e8f0;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        .card-menu:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+            border-color: #cbd5e1;
+        }
+
+        .btn-choice-ja {
+            background-color: #10b981;
+            color: white;
+            font-weight: 700;
+            padding: 12px 24px;
+            border-radius: 8px;
+            flex: 1;
+            transition: background-color 0.15s;
+        }
+        .btn-choice-ja:hover { background-color: #059669; }
+
+        .btn-choice-nee {
+            background-color: #1e3a8a;
+            color: white;
+            font-weight: 700;
+            padding: 12px 24px;
+            border-radius: 8px;
+            flex: 1;
+            transition: background-color 0.15s;
+        }
+        .btn-choice-nee:hover { background-color: #1e3a5f; }
+
+        .btn-choice-opt {
+            background-color: #eff6ff;
+            color: #1d4ed8;
+            font-weight: 600;
+            padding: 12px 18px;
+            border-radius: 8px;
+            border: 1px solid #bfdbfe;
+            text-align: left;
+            transition: all 0.15s;
+        }
+        .btn-choice-opt:hover {
+            background-color: #3b82f6;
+            color: white;
+        }
+
+        .badge-choice-ja { color: #10b981; font-weight: 700; }
+        .badge-choice-nee { color: #dc2626; font-weight: 700; }
+        .badge-choice-other { color: #2563eb; font-weight: 700; }
+    </style>
+</head>
+<body>
+
+<a href="index.html" class="fixed top-4 left-4 bg-gray-800 text-white px-4 py-2 rounded-lg font-bold shadow-lg z-[100] no-underline hover:bg-gray-700 transition">
+    ⬅ Terug naar Menu
+</a>
+
+<div class="container-custom">
+    <div class="flex justify-center mb-6">
+        <img src="https://de-energieurs.nl/wp-content/uploads/2023/07/logo_green.png" alt="De Energieurs Logo" style="max-width: 200px; height: auto;">
+    </div>
+
+    <!-- OVERZICHTSMENU -->
+    <div id="view_menu">
+        <div class="mb-8">
+            <h1 class="text-3xl font-extrabold text-gray-900 tracking-tight">Beslisschema's</h1>
+            <p class="text-gray-600 mt-1 text-base">Interactieve schema's die je stap voor stap naar het juiste antwoord leiden.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <div class="card-menu flex items-start gap-4" onclick="startSchema('aangrenzend')">
+                <div class="w-10 h-10 rounded-lg bg-amber-50 border border-amber-200 flex items-center justify-center text-amber-600 text-xl flex-shrink-0">🚪</div>
+                <div>
+                    <h2 class="font-bold text-gray-900 text-lg">Aangrenzende on-/verwarmde ruimte</h2>
+                    <p class="text-gray-500 text-sm mt-1">Bepaal of een aangrenzende ruimte als verwarmd of onverwarmd moet worden beschouwd.</p>
+                    <span class="inline-block mt-3 text-emerald-600 font-bold text-sm hover:underline">Start schema →</span>
+                </div>
+            </div>
+
+            <div class="card-menu flex items-start gap-4" onclick="startSchema('overige_ruimte')">
+                <div class="w-10 h-10 rounded-lg bg-amber-50 border border-amber-200 flex items-center justify-center text-amber-600 text-xl flex-shrink-0">🏠</div>
+                <div>
+                    <h2 class="font-bold text-gray-900 text-lg">Overige ruimte woningen</h2>
+                    <p class="text-gray-500 text-sm mt-1">Classificatie van overige ruimtes in woningen.</p>
+                    <span class="inline-block mt-3 text-emerald-600 font-bold text-sm hover:underline">Start schema →</span>
+                </div>
+            </div>
+
+            <div class="card-menu flex items-start gap-4" onclick="startSchema('garage')">
+                <div class="w-10 h-10 rounded-lg bg-amber-50 border border-amber-200 flex items-center justify-center text-amber-600 text-xl flex-shrink-0">🚗</div>
+                <div>
+                    <h2 class="font-bold text-gray-900 text-lg">Garage: sterk geventileerd of overige ruimte</h2>
+                    <p class="text-gray-500 text-sm mt-1">Bepaal of een garage sterk geventileerd is of een 'overige ruimte'.</p>
+                    <span class="inline-block mt-3 text-emerald-600 font-bold text-sm hover:underline">Start schema →</span>
+                </div>
+            </div>
+
+            <div class="card-menu flex items-start gap-4" onclick="startSchema('renovatiejaar')">
+                <div class="w-10 h-10 rounded-lg bg-amber-50 border border-amber-200 flex items-center justify-center text-amber-600 text-xl flex-shrink-0">🔨</div>
+                <div>
+                    <h2 class="font-bold text-gray-900 text-lg">Renovatiejaar</h2>
+                    <p class="text-gray-500 text-sm mt-1">Bepaal het juiste renovatiejaar voor de berekening.</p>
+                    <span class="inline-block mt-3 text-emerald-600 font-bold text-sm hover:underline">Start schema →</span>
+                </div>
+            </div>
+
+            <div class="card-menu flex items-start gap-4" onclick="startSchema('rc_waarde')">
+                <div class="w-10 h-10 rounded-lg bg-amber-50 border border-amber-200 flex items-center justify-center text-amber-600 text-xl flex-shrink-0">📐</div>
+                <div>
+                    <h2 class="font-bold text-gray-900 text-lg">Rc-waarde renovatie/aanbouw</h2>
+                    <p class="text-gray-500 text-sm mt-1">Bepaal de Rc-waarde bij renovatie of aanbouw.</p>
+                    <span class="inline-block mt-3 text-emerald-600 font-bold text-sm hover:underline">Start schema →</span>
+                </div>
+            </div>
+
+            <div class="card-menu flex items-start gap-4" onclick="startSchema('thermische_zone')">
+                <div class="w-10 h-10 rounded-lg bg-amber-50 border border-amber-200 flex items-center justify-center text-amber-600 text-xl flex-shrink-0">🏢</div>
+                <div>
+                    <h2 class="font-bold text-gray-900 text-lg">Thermische zone utiliteit</h2>
+                    <p class="text-gray-500 text-sm mt-1">Zone-bepaling voor utiliteitsgebouwen.</p>
+                    <span class="inline-block mt-3 text-emerald-600 font-bold text-sm hover:underline">Start schema →</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ACTIEF BESLISSCHEMA -->
+    <div id="view_schema" class="hidden">
+        <!-- Schema Header -->
+        <div class="mb-6">
+            <h1 id="schema_title" class="text-2xl md:text-3xl font-extrabold text-gray-900"></h1>
+            <p id="schema_subtitle" class="text-gray-500 text-sm mt-1"></p>
+        </div>
+
+        <!-- Referentie veld -->
+        <div class="mb-5">
+            <label class="block text-sm font-semibold text-gray-700 mb-1">
+                Referentie <span class="text-gray-400 font-normal">(optioneel)</span>
+            </label>
+            <input type="text" id="schema_referentie" placeholder="bijv. Hoofdstraat 123, Amsterdam"
+                   class="w-full bg-white border border-gray-300 rounded-lg px-4 py-3 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500">
+        </div>
+
+        <!-- Conclusie box -->
+        <div id="box_conclusie" class="hidden mb-5 border rounded-xl p-6 shadow-sm">
+            <h3 class="text-sm font-bold uppercase tracking-wider mb-2">Conclusie</h3>
+            <div id="conclusie_text" class="text-lg"></div>
+        </div>
+
+        <!-- Eerdere keuzes (geschiedenis) -->
+        <div id="box_geschiedenis" class="hidden mb-5 bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
+            <h3 class="text-base font-bold text-gray-900 mb-4">Eerdere keuzes</h3>
+            <ol id="geschiedenis_lijst" class="list-decimal list-inside space-y-3 text-sm text-gray-700"></ol>
+        </div>
+
+        <!-- Vraag box -->
+        <div id="box_vraag" class="bg-white border border-gray-200 rounded-xl p-6 shadow-sm mb-5">
+            <span id="vraag_nummer" class="text-sm font-semibold text-gray-500 block mb-2"></span>
+            <h2 id="vraag_titel" class="text-xl font-normal text-gray-900 leading-snug mb-5"></h2>
+            
+            <div id="vraag_tip" class="hidden mb-6 bg-slate-50 rounded-lg p-4 text-sm text-slate-600 flex gap-3 items-start">
+                <span class="text-lg flex-shrink-0">💡</span>
+                <span id="vraag_tip_text"></span>
+            </div>
+
+            <div id="knoppen_container" class="flex flex-col sm:flex-row gap-4"></div>
+        </div>
+
+        <!-- Actieknoppen onderaan -->
+        <div class="flex items-center gap-4 mt-6">
+            <button id="btn_download_pdf" onclick="downloadPDF()" class="hidden bg-emerald-500 hover:bg-emerald-600 text-white font-bold px-6 py-2.5 rounded-lg flex items-center gap-2 text-sm shadow">
+                📄 Download PDF
+            </button>
+            <button onclick="resetHuidigSchema()" class="text-sm text-gray-500 hover:text-gray-900 flex items-center gap-1">
+                ↺ Opnieuw beginnen
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const schemas = {
+// --- Aangepast Garage Schema conform screenshots met Vraag 4 ---
+        garage: {
+            title: "Beslisschema Garage: sterk geventileerd of 'overige ruimte'",
+            subtitle: "Volgens ISSO 82.1 7e druk beslisschema 6.1 (per 29-05-2026)",
+            startNode: "q1",
+            nodes: {
+                q1: {
+                    vraag: "Is er een grote ventilatieopening aanwezig?",
+                    tip: "Een grote ventilatieopening: één of meer niet-afsluitbare openingen met een totale oppervlakte van minimaal 0,2 m² die in verbinding staan met de buitenlucht.",
+                    knoppen: [
+                        { label: "Ja", val: "Ja", next: "end_sterk_gev" },
+                        { label: "Nee", val: "Nee", next: "q2" }
+                    ]
+                },
+                q2: {
+                    vraag: "Heeft de ruimte een grote toegangsdeur?",
+                    tip: "Een grote toegangsdeur is een enkele of dubbele deur van minimaal 1,50 meter breed en minimaal 1,75 meter hoog.",
+                    knoppen: [
+                        { label: "Ja", val: "Ja", next: "q3" },
+                        { label: "Nee", val: "Nee", next: "end_overige" }
+                    ]
+                },
+                q3: {
+                    vraag: "Is de grote toegangsdeur luchtdoorlatend?",
+                    tip: "Luchtdoorlatend is een stalen kanteldeur, of een deur die openingen heeft van in totaal minstens 0,2 m².",
+                    knoppen: [
+                        { label: "Ja", val: "Ja", next: "end_sterk_gev" },
+                        { label: "Nee", val: "Nee", next: "q4" }
+                    ]
+                },
+                q4: {
+                    vraag: "Is de warmteweerstand van de omhulling kleiner dan die van de scheiding met de woning?",
+                    tip: "Hiervan is sprake als meer dan 70% van het totale oppervlak van de gesloten uitwendige scheidingsconstructies geïsoleerd is én de oppervlaktegewogen gemiddelde warmteweerstand van de omhulling kleiner is dan die van de constructie tussen de ruimte en de woning. Ramen en deuren laat je buiten beschouwing.",
+                    knoppen: [
+                        { label: "Ja", val: "Ja", next: "end_sterk_gev" },
+                        { label: "Nee", val: "Nee", next: "end_overige" }
+                    ]
+                },
+                end_sterk_gev: {
+                    conclusie: "De garage is een <strong>sterk geventileerde ruimte</strong> en valt buiten de thermische zone.",
+                    style: "blue"
+                },
+                end_overige: {
+                    conclusie: "De garage is een <strong>'overige ruimte'</strong>. Bepaal met het beslisschema 'Overige ruimte' of deze tot de thermische zone behoort.",
+                    style: "yellow"
+                }
+            }
+        },
+        // --- Overige schemas ter referentie behouden ---
+        aangrenzend: {
+            title: "Beslisschema aangrenzende on-/verwarmde ruimte",
+            subtitle: "Volgens ISSO 82.1 7e druk beslisschema 6.4 (per 29-05-2026)",
+            startNode: "q1",
+            nodes: {
+                q1: {
+                    vraag: "Is de aangrenzende ruimte sterk geventileerd?",
+                    tip: "Bijvoorbeeld open lamellen, permanente niet-afsluitbare roosters > normatieve eis, of een open garagedeur/poort.",
+                    knoppen: [
+                        { label: "Ja", val: "Ja", next: "end_buiten" },
+                        { label: "Nee", val: "Nee", next: "q2" }
+                    ]
+                },
+                q2: {
+                    vraag: "Heeft de ruimte het hele jaar rond continu een binnentemperatuur van minimaal 15 graden Celsius?",
+                    tip: "Bijvoorbeeld door een productieproces in die ruimte. Een gewoon warmteafgiftesysteem valt daar niet onder.",
+                    knoppen: [
+                        { label: "Ja", val: "Ja", next: "end_verwarmd" },
+                        { label: "Nee", val: "Nee", next: "q3" }
+                    ]
+                },
+                q3: {
+                    vraag: "Behoort de ruimte tot de thermische zone als van het gehele gebouw de energieprestatie bepaald wordt?",
+                    tip: "Vraag je af: als het hele gebouw als één geheel wordt doorgerekend, zou deze ruimte dan tot de thermische zone behoren?",
+                    knoppen: [
+                        { label: "Ja", val: "Ja", next: "end_verwarmd" },
+                        { label: "Nee", val: "Nee", next: "end_onverwarmd" }
+                    ]
+                },
+                end_verwarmd: { conclusie: "Aangrenzende ruimte als <strong>verwarmd</strong> beschouwen.", style: "green" },
+                end_onverwarmd: { conclusie: "Aangrenzende ruimte als <strong>onverwarmd</strong> beschouwen.", style: "green" },
+                end_buiten: { conclusie: "Constructie beschouwen als grenzend aan <strong>buiten</strong>.", style: "green" }
+            }
+        },
+        overige_ruimte: {
+            title: "Beslisschema overige ruimte woningen",
+            subtitle: "Volgens ISSO 82.1 7e druk beslisschema's 6.3a t/m 6.3c (per 29-05-2026)",
+            startNode: "q1",
+            nodes: {
+                q1: {
+                    vraag: "Grenst de ruimte aan een ruimte die hoort tot de thermische zone?",
+                    knoppen: [{ label: "Ja", val: "Ja", next: "q2" }, { label: "Nee", val: "Nee", next: "end_buiten_tz" }]
+                },
+                q2: {
+                    vraag: "Wordt de ruimte verwarmd of gekoeld voor het verblijf van mensen?",
+                    knoppen: [{ label: "Ja", val: "Ja", next: "end_wel_tz" }, { label: "Nee", val: "Nee", next: "q3" }]
+                },
+                q3: {
+                    vraag: "Is er een open verbinding tussen de ruimte en een andere ruimte behorend bij de thermische zone?",
+                    knoppen: [{ label: "Ja", val: "Ja", next: "end_wel_tz" }, { label: "Nee", val: "Nee", next: "q4" }]
+                },
+                q4: {
+                    vraag: "Wordt de ruimte omsloten door isolatie of een spouwmuur of alleen raam/glas?",
+                    tip: "Er is sprake van isolatie of spouw als meer dan 70% van het totale oppervlak van de gesloten uitwendige scheidingsconstructies minimaal 1 cm isolatie of spouw bevat. Ramen en deuren laat je hierbij buiten beschouwing.",
+                    knoppen: [{ label: "Ja", val: "Ja", next: "q5_glas" }, { label: "Nee", val: "Nee", next: "end_niet_tz" }]
+                },
+                q5_glas: {
+                    vraag: "Is in de ruimte in de gevel(s) of dak meer dan 10% raamoppervlak aanwezig en bestaat meer dan 30% van de oppervlakte van het raam uit enkel glas?",
+                    tip: "Het gaat hier om uitwendige daglichtopeningen en deuren met een samengestelde U-waarde ≥ 4,5 W/m²·K.",
+                    knoppen: [{ label: "Ja", val: "Ja", next: "q6_spouw" }, { label: "Nee", val: "Nee", next: "q5_zolder" }]
+                },
+                q6_spouw: {
+                    vraag: "Wordt de ruimte omsloten door isolatie of een spouwmuur?",
+                    knoppen: [{ label: "Ja", val: "Ja", next: "end_niet_tz" }, { label: "Nee", val: "Nee", next: "q7_scheiding" }]
+                },
+                q7_scheiding: {
+                    vraag: "Is de constructie tussen de ruimte en andere ruimte behorend bij de rekenzone van een spouw en/of isolatie voorzien?",
+                    knoppen: [{ label: "Ja", val: "Ja", next: "end_niet_tz" }, { label: "Nee", val: "Nee", next: "q8_afgifte" }]
+                },
+                q8_afgifte: {
+                    vraag: "Is er in de ruimte een gebouwgebonden warmteafgiftesysteem aanwezig?",
+                    knoppen: [{ label: "Ja", val: "Ja", next: "end_wel_tz" }, { label: "Nee", val: "Nee", next: "end_niet_tz" }]
+                },
+                
+                // Zolder/Kelder route als Q5 'Nee' is
+                q5_zolder: {
+                    vraag: "Is de ruimte een onverwarmde zolder/vliering die uitsluitend via een luik/vlizotrap bereikbaar is, of een kelder/kruipruimte?",
+                    knoppen: [{ label: "Ja", val: "Ja", next: "end_niet_tz" }, { label: "Nee", val: "Nee", next: "q6_hoogte" }]
+                },
+                q6_hoogte: {
+                    vraag: "Heeft de ruimte een vrije hoogte van minimaal 1,50 m over een oppervlakte van minstens 4,0 m²?",
+                    knoppen: [{ label: "Ja", val: "Ja", next: "end_wel_tz" }, { label: "Nee", val: "Nee", next: "end_niet_tz" }]
+                },
+                
+                // Conclusies
+                end_wel_tz: { conclusie: "Overige ruimte behoort <strong>WEL</strong> tot de thermische zone.", style: "green" },
+                end_niet_tz: { conclusie: "Overige ruimte behoort <strong>NIET</strong> tot de thermische zone.", style: "yellow" },
+                end_buiten_tz: { conclusie: "Ruimte ligt <strong>BUITEN</strong> de thermische zone.", style: "blue" }
+            }
+        },
+      renovatiejaar: {
+            title: "Beslisschema renovatiejaar",
+            subtitle: "Volgens ISSO 82.1 7e druk beslisschema 7.3 (per 29-05-2026)",
+            toelichtingTitel: "Toelichting (ISSO 7e druk)",
+            toelichting: [
+                "Renovatiejaar van toepassing maar het jaar is onbekend: hanteer het eerste jaar van de eerstvolgende hogere bouwjaarklasse (één klasse boven het oorspronkelijke bouwjaar).",
+                "Zijn het dak en de gevel in verschillende perioden geïsoleerd, dan is het jaar van het dak leidend. Bij een woning zonder dak is de gevel maatgevend; zijn de kozijnen en de gevel in verschillende jaren aangepakt, dan hanteer je het oudste jaar."
+            ],
+            startNode: "q1",
+            nodes: {
+                q1: {
+                    vraag: "Is van het betreffende gebouw de luchtdichtheid (Qv 10-waarde) gemeten?",
+                    knoppen: [
+                        { label: "Ja", val: "Ja", next: "q2" }, 
+                        { label: "Nee", val: "Nee", next: "q3" }
+                    ]
+                },
+                q2: {
+                    vraag: "Voldoet de meting aan de eisen uit paragraaf 7.1.5?",
+                    tip: "Ga na of de luchtdichtheid van de betreffende rekenzone met een blowerdoortest is gemeten conform NEN 2686. Indien een bedrijf is gecertificeerd volgens BRL 5027, dan mag je ervan uitgaan dat het bedrijf en de meting voldoen aan deze voorwaarden. De meting moet zijn uitgevoerd door een onafhankelijke partij.",
+                    knoppen: [
+                        { label: "Ja", val: "Ja", next: "end_qv10" }, 
+                        { label: "Nee", val: "Nee", next: "q3" }
+                    ]
+                },
+                q3: {
+                    vraag: "Is minimaal 90% van het oppervlak van de schil (grenzend aan buiten) na het bouwjaar nageïsoleerd?",
+                    tip: "Indien in de thermische schil van de woning geen dak aanwezig is, dan telt het dak van het woongebouw niet mee. Indien het een gebouw is met een doorlopende (balkon)vloer die niet in de renovatie meegenomen kan worden, dan telt het oppervlak van de doorsnede van de vloer niet mee in de 90%-regel. Indien niet het dak, maar de zoldervloer is geïsoleerd volstaat ook de isolatie van de zoldervloer.",
+                    knoppen: [
+                        { label: "Ja", val: "Ja", next: "q4" }, 
+                        { label: "Nee", val: "Nee", next: "end_niet_van_toepassing" }
+                    ]
+                },
+                q4: {
+                    vraag: "Is bij minimaal 90% van het raamoppervlak het glas vervangen door isolerend glas en is er kierdichting aangebracht bij de te openen ramen?",
+                    knoppen: [
+                        { label: "Ja", val: "Ja", next: "q5" }, 
+                        { label: "Nee", val: "Nee", next: "end_niet_van_toepassing" }
+                    ]
+                },
+                q5: {
+                    vraag: "Zijn bij minimaal 90% van het raamoppervlak de kozijnen vervangen door nieuwe kozijnen?",
+                    knoppen: [
+                        { label: "Ja", val: "Ja", next: "end_wel_van_toepassing" }, 
+                        { label: "Nee", val: "Nee", next: "q6" }
+                    ]
+                },
+                q6: {
+                    vraag: "Is bij minimaal 90% van het raamoppervlak kierdichting tussen muur en kozijn aangebracht of is de aansluiting tussen muur en kozijn kierdicht als gevolg van na-isolatie van de gevel?",
+                    tip: "Kierdichting tussen muur en kozijn moet een flexibele en uitzettende afdichting zijn, zoals uitzetband. Uitsluitend afkitten volstaat niet. In geval van na-isolatie van de gevel volstaat spouwmuurisolatie of geïsoleerde voorzetwanden.",
+                    knoppen: [
+                        { label: "Ja", val: "Ja", next: "end_wel_van_toepassing" }, 
+                        { label: "Nee", val: "Nee", next: "end_niet_van_toepassing" }
+                    ]
+                },
+                
+                // Conclusies
+                end_qv10: { 
+                    conclusie: "Gebruik de <strong>Qv 10-waarde</strong> voor de infiltratie.", 
+                    style: "blue" 
+                },
+                end_wel_van_toepassing: { 
+                    conclusie: "Renovatiejaar is <strong>WEL</strong> van toepassing.", 
+                    style: "green" 
+                },
+                end_niet_van_toepassing: { 
+                    conclusie: "Renovatiejaar is <strong>NIET</strong> van toepassing.", 
+                    style: "yellow" 
+                }
+            }
+        },
+        rc_waarde: {
+            title: "Beslisschema Rc-waarde constructie renovatie of aanbouw",
+            subtitle: "Volgens ISSO 82.1 7e druk beslisschema 8.14 (per 29-05-2026)",
+            toelichtingTitel: "Toelichting (ISSO 7e druk)",
+            toelichting: [
+                "Uitzondering bij bouwjaar vóór 1965: is er bewijs van isolatie maar zijn de dikte én het renovatiejaar onbekend, dan gebruik je niet 'de klasse volgend op het bouwjaar', maar de kolom '(na)geïsoleerd' uit tabel 8.9."
+            ],
+            startNode: "q1",
+            nodes: {
+                q1: {
+                    vraag: "Isolatie vast te stellen?",
+                    knoppen: [
+                        { label: "Ja", val: "Ja", next: "q2" }, 
+                        { label: "Nee", val: "Nee", next: "end_ongeisoleerd" }
+                    ]
+                },
+                q2: {
+                    vraag: "Dikte van isolatie vast te stellen?",
+                    knoppen: [
+                        { label: "Ja", val: "Ja", next: "end_dikte" }, 
+                        { label: "Nee", val: "Nee", next: "q3" }
+                    ]
+                },
+                q3: {
+                    vraag: "Jaar van renovatie of aanbouw bekend?",
+                    knoppen: [
+                        { label: "Ja", val: "Ja", next: "q4" }, 
+                        { label: "Nee", val: "Nee", next: "end_bouwjaar" }
+                    ]
+                },
+                q4: {
+                    vraag: "Geïsoleerd volgens eis bouwregelgeving in betreffend jaar?",
+                    tip: "Hoogst aan te houden bouwjaarklasse 'van 1992 tot 2014', ofwel Rc = 2,5 m²·K/W. Stel, een gebouw is in 1995 volledig gerenoveerd, de isolatiedikte van de gevel is niet te bepalen en er is geen bewijs dat de Rc-waarde van de gevel na renovatie voldoet aan de eisen zoals gesteld in het Bouwbesluit van 1995. Voor de gevel houd je dan bouwjaarklasse 'van 1988 tot 1992' aan.",
+                    knoppen: [
+                        { label: "Ja", val: "Ja", next: "end_renovatiejaar" }, 
+                        { label: "Nee", val: "Nee", next: "end_voorgaand_jaar" }
+                    ]
+                },
+                
+                // Conclusies
+                end_ongeisoleerd: { 
+                    conclusie: "Constructie is <strong>ongeïsoleerd</strong>. Hanteer de forfaitaire Rc-waarde voor ongeïsoleerd uit tabel 8.9.", 
+                    style: "yellow" 
+                },
+                end_dikte: { 
+                    conclusie: "Rond de isolatiedikte af op hele cm's en bepaal <strong>Rc-waarde met tabel 8.11 + formule 8.4</strong>.", 
+                    style: "green" 
+                },
+                end_bouwjaar: { 
+                    conclusie: "Neem de klasse volgend op <strong>het bouwjaar</strong>. Zie toelichting voor uitzondering vóór 1965.", 
+                    style: "yellow" 
+                },
+                end_renovatiejaar: { 
+                    conclusie: "Bouwjaarklasse is gelijk aan het <strong>jaar van renovatie of de aanbouw</strong>.", 
+                    style: "green" 
+                },
+                end_voorgaand_jaar: { 
+                    conclusie: "Neem de bouwjaarklasse <strong>voorafgaand aan de klasse</strong> van het jaar van renovatie of aanbouw.", 
+                    style: "yellow" 
+                }
+            }
+        },
+      thermische_zone: {
+            title: "Beslisschema thermische zone aangrenzende ruimten utiliteit",
+            subtitle: "Volgens ISSO 75.1 7e druk beslisschema's 6.1 t/m 6.3 (per 29-05-2026)",
+            toelichtingTitel: "Toelichting (ISSO 7e druk)",
+            toelichting: [
+                "Een technische ruimte met grote installaties (die een gebruiksoppervlakte van meer dan 500 m² bedienen) ligt altijd buiten de thermische zone.",
+                "Ruimten met een industriefunctie of een overige gebruiksfunctie behoren nooit tot de thermische zone (zie tabel 6.2).",
+                "Een garage beoordeel je met het aparte beslisschema 'Garage'."
+            ],
+            startNode: "q1",
+            nodes: {
+                q1: {
+                    vraag: "Grenst de ruimte aan een ruimte die hoort tot de thermische zone?",
+                    knoppen: [
+                        { label: "Ja", val: "Ja", next: "q2" }, 
+                        { label: "Nee", val: "Nee", next: "end_buiten_tz" }
+                    ]
+                },
+                q2: {
+                    vraag: "Wordt de ruimte verwarmd of gekoeld ten behoeve van het verblijf van mensen?",
+                    knoppen: [
+                        { label: "Ja", val: "Ja", next: "end_wel_tz" }, 
+                        { label: "Nee", val: "Nee", next: "q3" }
+                    ]
+                },
+                q3: {
+                    vraag: "Is er een open verbinding tussen de ruimte en een andere ruimte behorend bij de thermische zone?",
+                    tip: "Een open verbinding is een opening tussen twee ruimten die niet met aanwezige harde elementen is af te sluiten. Een opening is niet afgesloten als in de opening alleen een gordijn is aangebracht. Als een deur of luik in gesloten toestand meer dan 10% van de totale oppervlakte van de opening openlaat, geldt dit ook als open verbinding.",
+                    knoppen: [
+                        { label: "Ja", val: "Ja", next: "end_wel_tz" }, 
+                        { label: "Nee", val: "Nee", next: "q4" }
+                    ]
+                },
+                q4: {
+                    vraag: "Wordt de ruimte omsloten door isolatie of een spouwmuur of alleen raam/glas?",
+                    tip: "Er is sprake van isolatie of spouw als meer dan 70% van het totale oppervlak van de gesloten uitwendige scheidingsconstructies minimaal 1 cm isolatie of spouw bevat. Ramen en deuren laat je hierbij buiten beschouwing. NTA 8800 geeft aan dat de uitwendige scheidingsconstructie een warmteweerstand ≥ 0,36 m²·K/W moet hebben.",
+                    knoppen: [
+                        { label: "Ja", val: "Ja", next: "q5_glas" }, 
+                        { label: "Nee", val: "Nee", next: "q8_spouw" }
+                    ]
+                },
+                q5_glas: {
+                    vraag: "Is in de ruimte in de gevel(s) of dak meer dan 10% raamoppervlak aanwezig en bestaat meer dan 30% van de oppervlakte van het raam uit enkel glas?",
+                    tip: "Het gaat hier om uitwendige daglichtopeningen en deuren met een samengestelde U-waarde ≥ 4,5 W/m²·K. De U-waarde van dubbel glas in een kozijn is ook < 4,5 W/m²·K.",
+                    knoppen: [
+                        { label: "Ja", val: "Ja", next: "q8_spouw" }, 
+                        { label: "Nee", val: "Nee", next: "q6_constructie" }
+                    ]
+                },
+                q6_constructie: {
+                    vraag: "Is de constructie tussen de ruimte en andere ruimte behorend bij de rekenzone van een spouw en/of isolatie voorzien?",
+                    knoppen: [
+                        { label: "Ja", val: "Ja", next: "q7_weerstand" }, 
+                        { label: "Nee", val: "Nee", next: "end_wel_tz" }
+                    ]
+                },
+                q7_weerstand: {
+                    vraag: "Is de warmteweerstand van de constructie tussen de ruimte en andere ruimte behorend bij de thermische zone kleiner dan de warmteweerstand van de ruimte?",
+                    tip: "Hiervan is sprake als meer dan 70% van het totale oppervlak van de gesloten uitwendige scheidingsconstructies geïsoleerd is en de oppervlakte gewogen gemiddelde thermische weerstand groter is dan die van de constructies tussen de overige ruimte en de rekenzone.",
+                    knoppen: [
+                        { label: "Ja", val: "Ja", next: "end_wel_tz" }, 
+                        { label: "Nee", val: "Nee", next: "q8_spouw" }
+                    ]
+                },
+                q8_spouw: {
+                    vraag: "Wordt de ruimte omsloten door isolatie of een spouwmuur?",
+                    knoppen: [
+                        { label: "Ja", val: "Ja", next: "end_niet_tz" }, 
+                        { label: "Nee", val: "Nee", next: "q9_scheiding" }
+                    ]
+                },
+                q9_scheiding: {
+                    vraag: "Is de constructie tussen de ruimte en andere ruimte behorend bij de rekenzone van een spouw en/of isolatie voorzien?",
+                    knoppen: [
+                        { label: "Ja", val: "Ja", next: "end_niet_tz" }, 
+                        { label: "Nee", val: "Nee", next: "q10_afgifte" }
+                    ]
+                },
+                q10_afgifte: {
+                    vraag: "Is er in de ruimte een gebouwgebonden warmteafgiftesysteem aanwezig?",
+                    tip: "Radiatoren voor vorstbeveiliging mag je niet beschouwen als een gebouwgebonden warmteafgiftesysteem. Mobiele verwarmingselementen, zoals elektrische kacheltjes en dergelijke mag je ook niet beschouwen als een gebouwgebonden warmteafgiftesysteem. Een warmteopwekker mag je ook niet beschouwen als een warmteafgiftesysteem.",
+                    knoppen: [
+                        { label: "Ja", val: "Ja", next: "end_wel_tz" }, 
+                        { label: "Nee", val: "Nee", next: "end_niet_tz" }
+                    ]
+                },
+                
+                // Conclusies
+                end_wel_tz: { 
+                    conclusie: "Aangrenzende ruimte behoort <strong>WEL</strong> tot de thermische zone.", 
+                    style: "green" 
+                },
+                end_niet_tz: { 
+                    conclusie: "Aangrenzende ruimte behoort <strong>NIET</strong> tot de thermische zone.", 
+                    style: "yellow" 
+                },
+                end_buiten_tz: { 
+                    conclusie: "Ruimte ligt <strong>BUITEN</strong> de thermische zone.", 
+                    style: "blue" 
+                }
+            }
+        }
+    };
+
+    let actieveSchemaId = null;
+    let huidigeNodeId = null;
+    let historiek = [];
+
+    function startSchema(schemaId) {
+        actieveSchemaId = schemaId;
+        const schema = schemas[schemaId];
+        huidigeNodeId = schema.startNode;
+        historiek = [];
+
+        document.getElementById('view_menu').classList.add('hidden');
+        document.getElementById('view_schema').classList.remove('hidden');
+
+        document.getElementById('schema_title').innerText = schema.title;
+        document.getElementById('schema_subtitle').innerText = schema.subtitle;
+        document.getElementById('schema_referentie').value = "";
+
+        renderStep();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function backToOverview() {
+        document.getElementById('view_schema').classList.add('hidden');
+        document.getElementById('view_menu').classList.remove('hidden');
+        actieveSchemaId = null;
+        huidigeNodeId = null;
+        historiek = [];
+    }
+
+    function resetHuidigSchema() {
+        if (!actieveSchemaId) return;
+        huidigeNodeId = schemas[actieveSchemaId].startNode;
+        historiek = [];
+        renderStep();
+    }
+
+    function maakKeuze(gekozenWaarde, volgendeNodeId) {
+        const schema = schemas[actieveSchemaId];
+        const huidigeNode = schema.nodes[huidigeNodeId];
+
+        historiek.push({
+            vraag: huidigeNode.vraag,
+            antwoord: gekozenWaarde
+        });
+
+        huidigeNodeId = volgendeNodeId;
+        renderStep();
+    }
+
+    function renderStep() {
+        const schema = schemas[actieveSchemaId];
+        const currentNode = schema.nodes[huidigeNodeId];
+
+        const boxConclusie = document.getElementById('box_conclusie');
+        const boxVraag = document.getElementById('box_vraag');
+        const boxGeschiedenis = document.getElementById('box_geschiedenis');
+        const geschiedenisLijst = document.getElementById('geschiedenis_lijst');
+        const btnPdf = document.getElementById('btn_download_pdf');
+
+        if (historiek.length > 0) {
+            boxGeschiedenis.classList.remove('hidden');
+            geschiedenisLijst.innerHTML = "";
+            historiek.forEach((item, index) => {
+                const li = document.createElement('li');
+                let badgeClass = "badge-choice-other";
+                if (item.antwoord === "Ja") badgeClass = "badge-choice-ja";
+                if (item.antwoord === "Nee") badgeClass = "badge-choice-nee";
+
+                li.innerHTML = `${index + 1}. ${item.vraag} — <span class="${badgeClass}">${item.antwoord}</span>`;
+                geschiedenisLijst.appendChild(li);
+            });
+        } else {
+            boxGeschiedenis.classList.add('hidden');
+        }
+
+        if (currentNode.conclusie) {
+            boxVraag.classList.add('hidden');
+            boxConclusie.classList.remove('hidden');
+            btnPdf.classList.remove('hidden');
+
+            // Kleur styling toepassen zoals in screenshots
+            boxConclusie.className = "mb-5 border rounded-xl p-6 shadow-sm " + 
+                (currentNode.style === 'blue' ? "bg-blue-50 border-blue-200 text-blue-900" : 
+                (currentNode.style === 'yellow' ? "bg-amber-50 border-amber-300 text-amber-900" : 
+                "bg-emerald-50 border-emerald-300 text-emerald-900"));
+
+            document.getElementById('conclusie_text').innerHTML = currentNode.conclusie;
+        } else {
+            boxVraag.classList.remove('hidden');
+            boxConclusie.classList.add('hidden');
+            btnPdf.classList.add('hidden');
+
+            document.getElementById('vraag_nummer').innerText = `Vraag ${historiek.length + 1}`;
+            document.getElementById('vraag_titel').innerText = currentNode.vraag;
+
+            const tipBox = document.getElementById('vraag_tip');
+            if (currentNode.tip) {
+                tipBox.classList.remove('hidden');
+                document.getElementById('vraag_tip_text').innerText = currentNode.tip;
+            } else {
+                tipBox.classList.add('hidden');
+            }
+
+            const container = document.getElementById('knoppen_container');
+            container.innerHTML = "";
+
+            currentNode.knoppen.forEach(btn => {
+                const buttonEl = document.createElement('button');
+                buttonEl.innerText = btn.label;
+                if (btn.val === "Ja") buttonEl.className = "btn-choice-ja";
+                else if (btn.val === "Nee") buttonEl.className = "btn-choice-nee";
+                else buttonEl.className = "btn-choice-opt";
+
+                buttonEl.onclick = () => maakKeuze(btn.val, btn.next);
+                container.appendChild(buttonEl);
+            });
+        }
+    }
+
+    function downloadPDF() {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        const ref = document.getElementById('schema_referentie').value || "Geen referentie opgegeven";
+        const schema = schemas[actieveSchemaId];
+        const currentNode = schema.nodes[huidigeNodeId];
+
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(16);
+        doc.setTextColor(30, 41, 59);
+        doc.text("Beslisschema Rapport (ISSO 82.1 / 75.1)", 20, 22);
+
+        doc.setFontSize(11);
+        doc.setFont("helvetica", "normal");
+        doc.setTextColor(71, 85, 105);
+        doc.text(schema.title, 20, 30);
+        doc.text(`Referentie: ${ref}`, 20, 38);
+        doc.text(`Datum: ${new Date().toLocaleDateString('nl-NL')}`, 20, 44);
+
+        doc.setDrawColor(203, 213, 225);
+        doc.line(20, 48, 190, 48);
+
+        doc.setFillColor(236, 253, 245);
+        if (currentNode.style === 'blue') doc.setFillColor(239, 246, 255);
+        if (currentNode.style === 'yellow') doc.setFillColor(255, 251, 235);
+        
+        doc.roundedRect(20, 54, 170, 26, 3, 3, 'F');
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(10);
+        doc.setTextColor(5, 150, 105);
+        if (currentNode.style === 'blue') doc.setTextColor(30, 58, 138);
+        if (currentNode.style === 'yellow') doc.setTextColor(146, 64, 14);
+
+        doc.text("CONCLUSIE:", 25, 62);
+        doc.setFontSize(12);
+        
+        // Simpele HTML strip voor de PDF tekst
+        let puurTekst = currentNode.conclusie.replace(/<[^>]*>?/gm, '');
+        doc.text(puurTekst, 25, 70);
+
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(11);
+        doc.setTextColor(30, 41, 59);
+        doc.text("Eerdere keuzes:", 20, 92);
+
+        let y = 100;
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(10);
+        doc.setTextColor(51, 65, 85);
+
+        historiek.forEach((stap, index) => {
+            const regel = `${index + 1}. ${stap.vraag} — ${stap.antwoord}`;
+            const splitText = doc.splitTextToSize(regel, 170);
+            doc.text(splitText, 20, y);
+            y += (splitText.length * 6) + 3;
+        });
+
+        const bestandsnaam = `Beslisschema_${ref.replace(/[^a-zA-Z0-9]/g, "_")}.pdf`;
+        doc.save(bestandsnaam);
+    }
+</script>
+
+</body>
+</html>
